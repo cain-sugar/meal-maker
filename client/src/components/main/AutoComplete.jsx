@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
 
 class AutoComplete extends React.Component {
   constructor(props) {
@@ -45,6 +46,17 @@ class AutoComplete extends React.Component {
     this.addIngredient(value);
   }
 
+  handleDelete(label) {
+    this.setState((state) => {
+      const deconstructedIngredientList = [...state.selectedIngredients];
+      const index = deconstructedIngredientList.indexOf(label);
+      deconstructedIngredientList.splice(index, 1);
+      console.log(deconstructedIngredientList);
+      // [...state.selectedIngredients] = deconstructedIngredientList;
+      this.setState({ selectedIngredients: deconstructedIngredientList });
+    });
+  }
+
   renderSuggestions() {
     const { suggestions } = this.state;
     if (suggestions.length === 0) {
@@ -53,10 +65,12 @@ class AutoComplete extends React.Component {
     return (
       <ul className="auto-ulist">
         {suggestions.map(ingredient => (
-          <li 
-            className="auto-list" 
-            onClick={() => this.suggestionSelected(ingredient)} 
-            key={ingredient}>{ingredient}
+          <li
+            className="auto-list"
+            onClick={() => this.suggestionSelected(ingredient)}
+            key={ingredient}
+          >
+            {ingredient}
           </li>
         ))}
       </ul>
@@ -69,15 +83,18 @@ class AutoComplete extends React.Component {
     return (
       <div className="AutoCompleteComponent">
         <div className="auto-complete">
-          <input value={text} onChange={this.onTextChange} type="text" placeholder=" What's in your fridge?" />
-          {this.renderSuggestions()}
           <ul>
             {selectedIngredients.map(ingredient => (
-              <li key={ingredient}>
-                {ingredient}
-              </li>
+              <Chip
+                label={ingredient}
+                color="primary"
+                onDelete={() => this.handleDelete(ingredient)}
+              />
             ))}
           </ul>
+          <input value={text} onChange={this.onTextChange} type="text" placeholder=" What's in your fridge?" />
+          {this.renderSuggestions()}
+
         </div>
         <div className="buttons">
           <Button className="search" variant="contained" color="primary" type="button" onClick={() => getRecipes(selectedIngredients.join(', '))}>Search</Button>
