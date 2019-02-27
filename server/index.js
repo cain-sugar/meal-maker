@@ -351,7 +351,7 @@ app.post('/toBeSavedDislike', (req, res) => {
 });
 
 // Able to set port and still work //
-const port = process.env.PORT || 3001;
+const port = 3306;
 
 // Listen and console log current port //
 app.listen(port, () => {

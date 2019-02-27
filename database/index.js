@@ -13,15 +13,12 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'mealmaker',
+  database: process.env.DB_NAME,
 });
 
 connection.connect((err) => {
-  if (!err) {
-    console.log('Houston, we have a db connection');
-  } else {
-    console.error('There was a problem connecting to the db. Error: ', err);
-  }
+  if (err) throw err;
+  console.log('Connected!');
 });
 
 module.exports.connection = connection;
