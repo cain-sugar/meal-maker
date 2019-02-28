@@ -11,7 +11,8 @@ class AutoComplete extends React.Component {
       suggestions: [],
       text: '',
       dislikeText: '',
-      selectedIngredients: [],
+      selectedIngredients: {},
+      color: 'primary',
       // dislikedIngredients: [],
       // textBoxForDislikedIngredients: false,
     };
@@ -30,7 +31,7 @@ class AutoComplete extends React.Component {
       const regex = new RegExp(`^${value}`, 'i');
       suggestions = ingredients.sort().filter(v => regex.test(v));
     }
-    this.setState({ suggestions, text: value });
+    this.setState({ suggestions, text: value, color: 'primary' });
   }
 
   onTextChange2(e) {
@@ -41,13 +42,13 @@ class AutoComplete extends React.Component {
       const regex = new RegExp(`^${value}`, 'i');
       suggestions = ingredients.sort().filter(v => regex.test(v));
     }
-    this.setState({ suggestions, dislikeText: value });
+    this.setState({ suggestions, dislikeText: value, color: 'secondary' });
   }
 
 
   addIngredient(ingredient) {
-    const { selectedIngredients } = this.state;
-    selectedIngredients.push(ingredient);
+    const { selectedIngredients, color } = this.state;
+    selectedIngredients[ingredient] = color;
     this.setState({
       selectedIngredients,
       text: '',
@@ -101,16 +102,16 @@ class AutoComplete extends React.Component {
 
 
   render() {
-    const { dislikeText, text, selectedIngredients } = this.state;
+    const { dislikeText, text, selectedIngredients, color } = this.state;
     const { getRecipes } = this.props;
     return (
       <div className="AutoCompleteComponent">
         <div className="auto-complete">
           <ul>
-            {selectedIngredients.map(ingredient => (
+            {Object.keys(selectedIngredients).map(ingredient => (
               <Chip
                 label={ingredient}
-                color="primary"
+                color={selectedIngredients[ingredient]}
                 onDelete={() => this.handleDelete(ingredient)}
               />
             ))}
