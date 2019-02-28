@@ -10,11 +10,16 @@ class AutoComplete extends React.Component {
     this.state = {
       suggestions: [],
       text: '',
+      dislikeText: '',
       selectedIngredients: [],
+      // dislikedIngredients: [],
+      // textBoxForDislikedIngredients: false,
     };
     this.onTextChange = this.onTextChange.bind(this);
+    this.onTextChange2 = this.onTextChange2.bind(this);
     this.suggestionSelected = this.suggestionSelected.bind(this);
     this.addIngredient = this.addIngredient.bind(this);
+    // this.disingredientsNotToAdd = this.ingredientsNotToAdd.bind(this);
   }
 
   onTextChange(e) {
@@ -26,6 +31,17 @@ class AutoComplete extends React.Component {
       suggestions = ingredients.sort().filter(v => regex.test(v));
     }
     this.setState({ suggestions, text: value });
+  }
+
+  onTextChange2(e) {
+    const { ingredients } = this.props;
+    const { value } = e.target;
+    let suggestions = [];
+    if (value.length > 0) {
+      const regex = new RegExp(`^${value}`, 'i');
+      suggestions = ingredients.sort().filter(v => regex.test(v));
+    }
+    this.setState({ suggestions, dislikeText: value });
   }
 
 
@@ -57,6 +73,12 @@ class AutoComplete extends React.Component {
     });
   }
 
+  // ingredientsNotToAdd() {
+  //   this.setState({
+  //     textBoxForDislikedIngredients? false : true;
+  //   })
+  // }
+
   renderSuggestions() {
     const { suggestions } = this.state;
     if (suggestions.length === 0) {
@@ -77,8 +99,9 @@ class AutoComplete extends React.Component {
     );
   }
 
+
   render() {
-    const { text, selectedIngredients } = this.state;
+    const { dislikeText, text, selectedIngredients } = this.state;
     const { getRecipes } = this.props;
     return (
       <div className="AutoCompleteComponent">
@@ -93,16 +116,17 @@ class AutoComplete extends React.Component {
             ))}
           </ul>
           <input value={text} onChange={this.onTextChange} type="text" placeholder=" What's in your fridge?" />
-          {this.renderSuggestions()}
 
         </div>
         <div className="buttons">
           <Button className="search" variant="contained" color="primary" type="button" onClick={() => getRecipes(selectedIngredients.join(', '))}>Search</Button>
           <div>Exclude Ingredients</div>
         </div>
+        <input value={dislikeText} onChange={this.onTextChange2} type="text" placeholder=" What should we leave out?" />
+        {this.renderSuggestions()}
       </div>
     );
   }
 }
-
+//  line 111 onClick = {() => this.dislikedIngredients()}
 export default AutoComplete;
