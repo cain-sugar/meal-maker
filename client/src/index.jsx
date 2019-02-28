@@ -1,4 +1,5 @@
 /* eslint-disable class-methods-use-this */
+// eslint-disable-next-line no-restricted-syntax
 // rendering all components
 /* eslint import/extensions: 0 */
 import React from 'react';
@@ -18,6 +19,8 @@ class App extends React.Component {
       recipeOfTheDay: randomRecipe, // recipe of the day video
       savedRecipes: [],
       ingredients: [],
+      wantedIngredients: [],
+      unwantedIngredients: [],
       userId: 0,
       selectedRecipe: randomRecipe,
       authorized: false,
@@ -47,12 +50,26 @@ class App extends React.Component {
   }
 
   // function to retrieve recipes to display
-  getRecipes(ingredients) {
-    const { userId } = this.state;
+  getRecipes(ingredients) { // ingredients is an object with the keys of ingredients and values of (have item or dislike item)
+    const { userId, wantedIngredients } = this.state;
+
+    Object.keys(ingredients).forEach((theIngredient) => {
+      const wantedIngredientList = [];
+      const unwantedIngredientList = [];
+      if (ingredients[theIngredient] === 'primary') {
+        wantedIngredientList.push(theIngredient);
+      } else {
+        unwantedIngredientList.push(theIngredient);
+      }
+      this.setState({
+        wantedIngredients: [...wantedIngredientList],
+        unwantedIngredients: [...unwantedIngredientList],
+      });
+    });
     return axios.get('/food', {
       params: {
         userId,
-        ingredients,
+        wantedIngredients,
       },
     }) // sends a GET request to serve at endpoint '/food'
       .then((results) => {
@@ -198,13 +215,15 @@ class App extends React.Component {
     const { show } = this.state;
     let mainComponent = 'login';
     const {
-      recipeOfTheDay, selectedRecipe, savedRecipes, recipes, ingredients, userName,
+      recipeOfTheDay, selectedRecipe, savedRecipes, recipes, ingredients, userName, wantedIngredients, unwantedIngredients,
     } = this.state;
     if (show === 'login') {
       mainComponent = <Login recipe={recipeOfTheDay} signUp={this.signUp} login={this.login} />;
     } else if (show === 'home') {
       mainComponent = (
         <Main
+          wantedIngredients={wantedIngredients}
+          unwantedIngredients={unwantedIngredients}
           recipes={recipes}
           recipeOfTheDay={recipeOfTheDay}
           selectedRecipe={selectedRecipe}

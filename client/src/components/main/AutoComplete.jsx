@@ -5,7 +5,7 @@ import Chip from '@material-ui/core/Chip';
 class AutoComplete extends React.Component {
   constructor(props) {
     super(props);
-    const { ingredients } = this.props;
+    const { ingredients, wantedIngredients, unwantedIngredients } = this.props;
     this.ingredients = ingredients;
     this.state = {
       suggestions: [],
@@ -48,7 +48,13 @@ class AutoComplete extends React.Component {
 
   addIngredient(ingredient) {
     const { selectedIngredients, color } = this.state;
+    const { unwantedIngredients, wantedIngredients } = this.props;
     selectedIngredients[ingredient] = color;
+    if (color === 'primary') {
+      wantedIngredients.push(ingredient);
+    } else {
+      unwantedIngredients.push(ingredient);
+    }
     this.setState({
       selectedIngredients,
       text: '',
@@ -102,7 +108,7 @@ class AutoComplete extends React.Component {
 
 
   render() {
-    const { dislikeText, text, selectedIngredients, color } = this.state;
+    const { dislikeText, text, selectedIngredients } = this.state;
     const { getRecipes } = this.props;
     return (
       <div className="AutoCompleteComponent">
@@ -120,7 +126,7 @@ class AutoComplete extends React.Component {
 
         </div>
         <div className="buttons">
-          <Button className="search" variant="contained" color="primary" type="button" onClick={() => getRecipes(selectedIngredients.join(', '))}>Search</Button>
+          <Button className="search" variant="contained" color="primary" type="button" onClick={() => getRecipes(Object.keys(selectedIngredients).join(', '))}>Search</Button>
           <div>Exclude Ingredients</div>
         </div>
         <input value={dislikeText} onChange={this.onTextChange2} type="text" placeholder=" What should we leave out?" />
