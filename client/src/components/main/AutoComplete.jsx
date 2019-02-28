@@ -98,6 +98,7 @@ class AutoComplete extends React.Component {
         </div>
         <div className="buttons">
           <Button className="search" variant="contained" color="primary" type="button" onClick={() => getRecipes(selectedIngredients.join(', '))}>Search</Button>
+          <div>Exclude Ingredients</div>
         </div>
       </div>
     );
