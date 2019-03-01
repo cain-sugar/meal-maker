@@ -26,7 +26,6 @@ class App extends React.Component {
       buttonClicked: false,
       whichFailed: null,
       searchInProgress: false,
-      path: '/',
       open: false,
       message: '',
     };
@@ -191,7 +190,6 @@ class App extends React.Component {
           authorized: true,
           userId: res.data.user.id,
           userName: res.data.user.username,
-          path: 'signup',
         });
         setTimeout(() => this.setState({ buttonClicked: false }), 500);
         this.componentDidMount();
@@ -222,7 +220,6 @@ class App extends React.Component {
           authorized: true,
           userId: res.data.user.id,
           userName: res.data.user.username,
-          path: 'login',
         });
         setTimeout(() => this.setState({ buttonClicked: false }), 500);
         this.componentDidMount();
@@ -245,11 +242,26 @@ class App extends React.Component {
     });
   }
 
+  saveAllergy(user, allergies) {
+    let bool;
+    axios.post('/allergies', {
+      user: {
+        user,
+        allergies,
+      },
+    }).then(() => {
+      bool = true;
+    }).catch(() => {
+      bool = false;
+    });
+    return bool;
+  }
+
   render() {
     const { show } = this.state;
     let mainComponent = 'login';
     const {
-      recipeOfTheDay, selectedRecipe, savedRecipes, recipes, ingredients, userName, path,
+      recipeOfTheDay, selectedRecipe, savedRecipes, recipes, ingredients, userName,
       buttonClicked, whichFailed, searchInProgress, open, message,
     } = this.state;
     if (show === 'login') {
@@ -278,8 +290,8 @@ class App extends React.Component {
           user={userName}
           searchInProgress={searchInProgress}
           logout={this.logout}
-          path={path}
           addOriginal={this.addOriginal}
+          saveAllergy={this.saveAllergy}
         />
       );
     }

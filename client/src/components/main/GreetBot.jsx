@@ -19,7 +19,7 @@ class GreetForm extends Component {
 
   render() {
     const { allergies, favFood, opened } = this.state;
-    const { user } = this.props;
+    const { user, saveAllergy } = this.props;
     const voices = speechSynthesis.getVoices();
     let voice = voices[4];
     if (voices.length > 40) {
