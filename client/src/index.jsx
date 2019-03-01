@@ -36,6 +36,7 @@ class App extends React.Component {
     this.selectRecipe = this.selectRecipe.bind(this);
     this.signUp = this.signUp.bind(this);
     this.login = this.login.bind(this);
+    this.getRestrictions = this.getRestrictions.bind(this);
   }
 
   componentDidMount() {
@@ -51,25 +52,12 @@ class App extends React.Component {
 
   // function to retrieve recipes to display
   getRecipes(ingredients) { // ingredients is an object with the keys of ingredients and values of (have item or dislike item)
-    const { userId, wantedIngredients } = this.state;
+    const { userId } = this.state;
 
-    Object.keys(ingredients).forEach((theIngredient) => {
-      const wantedIngredientList = [];
-      const unwantedIngredientList = [];
-      if (ingredients[theIngredient] === 'primary') {
-        wantedIngredientList.push(theIngredient);
-      } else {
-        unwantedIngredientList.push(theIngredient);
-      }
-      this.setState({
-        wantedIngredients: [...wantedIngredientList],
-        unwantedIngredients: [...unwantedIngredientList],
-      });
-    });
     return axios.get('/food', {
       params: {
         userId,
-        wantedIngredients,
+        ingredients,
       },
     }) // sends a GET request to serve at endpoint '/food'
       .then((results) => {
@@ -77,7 +65,22 @@ class App extends React.Component {
           recipes: results.data, // by making the data received back fron the server available
         });
       }).catch((err) => {
-        console.log(err, 'error while retrieving data from server');
+        // console.log(err, 'error while retrieving data from server');
+      });
+  }
+
+  // function to get recipes that follow restrictions. Id from these will be compared with the values above
+  getRestrictions(unwantedIngredientList) {
+    const { userId } = this.state;
+
+    return axios.get('/food', {
+      params: {
+        userId,
+        unwantedIngredientList,
+      },
+    })
+      .then((results) => {
+        // console.log(results);
       });
   }
 
@@ -90,7 +93,7 @@ class App extends React.Component {
         });
       })
       .catch((err) => {
-        console.log(`there was an error retriving random recipe : ${err}`);
+        // console.log(`there was an error retriving random recipe : ${err}`);
       });
   }
 
@@ -108,7 +111,7 @@ class App extends React.Component {
         });
       })
       .catch((err) => {
-        console.log(`there was an error retrieving saved recipes : ${err}`);
+        // console.log(`there was an error retrieving saved recipes : ${err}`);
       });
   }
 
@@ -121,7 +124,7 @@ class App extends React.Component {
         });
       })
       .catch((error) => {
-        console.log(error, 'error in getting all ingredients');
+        // console.log(error, 'error in getting all ingredients');
       });
   }
 
@@ -134,9 +137,9 @@ class App extends React.Component {
       recipeId: recipe.recipeId,
     })
       .then((result) => {
-        console.log(result);
+        // console.log(result);
       }).catch((err) => {
-        console.log(err, 'error while trying to save recipe into DB');
+        // console.log(err, 'error while trying to save recipe into DB');
       });
   }
 
@@ -149,9 +152,9 @@ class App extends React.Component {
       recipeId: recipe.recipeId,
     })
       .then((result) => {
-        console.log(result);
+        // console.log(result);
       }).catch((err) => {
-        console.log(err, 'error while trying to save recipe into DB');
+        // console.log(err, 'error while trying to save recipe into DB');
       });
   }
 
@@ -164,8 +167,8 @@ class App extends React.Component {
 
 
   signUp(user, pw) {
-    console.log(`thank you for signing up, ${user}`);
-    console.log(`Hello, ${user}`);
+    // console.log(`thank you for signing up, ${user}`);
+    // console.log(`Hello, ${user}`);
     axios.post('/api/users', {
       user: {
         username: user,
@@ -173,9 +176,9 @@ class App extends React.Component {
       },
     })
       .then((res) => {
-        console.log('made to signup');
-        console.log(res.data.user, res.data.user.id, 'RESPONSE');
-        console.log('where is res');
+        // console.log('made to signup');
+        // console.log(res.data.user, res.data.user.id, 'RESPONSE');
+        // console.log('where is res');
         this.setState({
           authorized: true,
           userId: res.data.user.id,
@@ -184,13 +187,13 @@ class App extends React.Component {
         this.componentDidMount();
       })
       .catch((bool) => {
-        console.log(bool, 'could not log in after signup');
+        // console.log(bool, 'could not log in after signup');
       });
   }
 
   login(user, pw) {
-    console.log('logged in');
-    console.log(`Hello, ${user}`);
+    // console.log('logged in');
+    // console.log(`Hello, ${user}`);
     axios.post('/api/users/login', {
       user: {
         username: user,
@@ -198,7 +201,7 @@ class App extends React.Component {
       },
     })
       .then((res) => {
-        console.log(res, 'LOGGING IN');
+        // console.log(res, 'LOGGING IN');
         this.setState({
           authorized: true,
           userId: res.data.user.id,
@@ -207,7 +210,7 @@ class App extends React.Component {
         this.componentDidMount();
       })
       .catch(() => {
-        console.log('could not log in');
+        // console.log('could not log in');
       });
   }
 
@@ -235,6 +238,7 @@ class App extends React.Component {
           getSavedRecipes={this.getSavedRecipes}
           selectRecipe={this.selectRecipe}
           user={userName}
+          getRestrictions={this.getRestrictions}
         />
       );
     }

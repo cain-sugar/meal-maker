@@ -5,7 +5,7 @@ import Chip from '@material-ui/core/Chip';
 class AutoComplete extends React.Component {
   constructor(props) {
     super(props);
-    const { ingredients, wantedIngredients, unwantedIngredients } = this.props;
+    const { ingredients, wantedIngredients, unwantedIngredients, getRestrictions } = this.props;
     this.ingredients = ingredients;
     this.state = {
       suggestions: [],
@@ -20,6 +20,7 @@ class AutoComplete extends React.Component {
     this.onTextChange2 = this.onTextChange2.bind(this);
     this.suggestionSelected = this.suggestionSelected.bind(this);
     this.addIngredient = this.addIngredient.bind(this);
+    this.sendWantedAndUnwantedIngredientsToParentNode = this.sendWantedAndUnwantedIngredientsToParentNode.bind(this);
     // this.disingredientsNotToAdd = this.ingredientsNotToAdd.bind(this);
   }
 
@@ -70,21 +71,17 @@ class AutoComplete extends React.Component {
   }
 
   handleDelete(label) {
-    this.setState((state) => {
-      const deconstructedIngredientList = [...state.selectedIngredients];
-      const index = deconstructedIngredientList.indexOf(label);
-      deconstructedIngredientList.splice(index, 1);
-      console.log(deconstructedIngredientList);
-      // [...state.selectedIngredients] = deconstructedIngredientList;
-      this.setState({ selectedIngredients: deconstructedIngredientList });
-    });
+    const { selectedIngredients } = this.state;
+    // const deconstructedIngredientList = { ...selectedIngredients };
+    delete deconstructedIngredientList[label];
+    this.setState({ selectedIngredients: deconstructedIngredientList });
   }
 
-  // ingredientsNotToAdd() {
-  //   this.setState({
-  //     textBoxForDislikedIngredients? false : true;
-  //   })
-  // }
+  sendWantedAndUnwantedIngredientsToParentNode(wanted, unwanted) {
+    const { getRecipes, getRestrictions } = this.props;
+    getRecipes(wanted.join(', '));
+    getRestrictions(unwanted.join(', '));
+  }
 
   renderSuggestions() {
     const { suggestions } = this.state;
@@ -109,7 +106,7 @@ class AutoComplete extends React.Component {
 
   render() {
     const { dislikeText, text, selectedIngredients } = this.state;
-    const { getRecipes } = this.props;
+    const { getRecipes, unwantedIngredients, wantedIngredients } = this.props;
     return (
       <div className="AutoCompleteComponent">
         <div className="auto-complete">
@@ -126,7 +123,7 @@ class AutoComplete extends React.Component {
 
         </div>
         <div className="buttons">
-          <Button className="search" variant="contained" color="primary" type="button" onClick={() => getRecipes(Object.keys(selectedIngredients).join(', '))}>Search</Button>
+          <Button className="search" variant="contained" color="primary" type="button" onClick={() => this.sendWantedAndUnwantedIngredientsToParentNode(wantedIngredients, unwantedIngredients)}>Search</Button>
           <div>Exclude Ingredients</div>
         </div>
         <input value={dislikeText} onChange={this.onTextChange2} type="text" placeholder=" What should we leave out?" />
