@@ -11,7 +11,7 @@ const _ = require('lodash');
 const { connection } = require('../database/index.js');
 
 const selectSingleRecipeById = (idOriginalDB, callback) => {
-  connection.query(`SELECT * FROM Recipes WHERE idRecipieFoodNutrition = ${idOriginalDB}`, (err, recipe) => {
+  connection.query(`SELECT * FROM Recipes WHERE idRecipeFoodNutrition = ${idOriginalDB}`, (err, recipe) => {
     if (err) {
       callback(err, null);
     } else {
@@ -43,8 +43,13 @@ const selectAllRecipes = (callback) => {
 };
 
 const saveRecipe = (recipeName, idOriginalDB, recipeImageLink, callback) => {
+<<<<<<< HEAD
   const q = [recipeName, idOriginalDB, recipeImageLink];
   connection.query('INSERT INTO Recipes (recipe, idRecipieFoodNutrition, recipeImageLink) VALUES (?, ?, ?)', q, (err, results) => {
+=======
+  let q = [recipeName, idOriginalDB, recipeImageLink];
+  connection.query('INSERT INTO Recipes (recipe, idRecipeFoodNutrition, recipeImageLink) VALUES (?, ?, ?)', q, (err, results) => {
+>>>>>>> 2e86154f78d9d6fc40c76275352baf521a5b3020
     if (err) {
       callback(err, null);
     } else {
@@ -261,10 +266,18 @@ const saveAllergies = (allergies, username) => {
           console.log('Allergies saved!');
         });
       }
+      
+const addOriginalRecipe = (recipeName, ingredients, instructions, cookTime) => {
+  const q = [recipeName, ingredients, instructions, cookTime];
+  connection.query('INSERT INTO originalRecipes (recipe_name, ingredients, instructions, cookTime) VALUES (?, ?, ?, ?)', q, (err, results) => {
+    if (err) {
+      console.log('There was an error');
+    } else {
+      console.log(results, 'Successfully added an original recipe');
     }
   });
 };
 
 module.exports = {
-  selectSingleRecipeById, toAuthJSON, validatePassword, selectSingleRecipeByName, selectAllRecipes, saveRecipe, selectLikedRecipes, saveLikedRecipe, selectAllRecipeOfTheDay, saveRecipeOfTheDay, updateRecipeOfTheDay, selectDislikedRecipes, dislikeRecipe, saveIngredient, saveRecipeIngredient, getRecipeIngredients, selectAllIngredients, selectAllUsers, saveUser, logoutUser, loginUser,
+  addOriginalRecipe, selectSingleRecipeById, toAuthJSON, validatePassword, selectSingleRecipeByName, selectAllRecipes, saveRecipe, selectLikedRecipes, saveLikedRecipe, selectAllRecipeOfTheDay, saveRecipeOfTheDay, updateRecipeOfTheDay, selectDislikedRecipes, dislikeRecipe, saveIngredient, saveRecipeIngredient, getRecipeIngredients, selectAllIngredients, selectAllUsers, saveUser, logoutUser, loginUser,
 };
