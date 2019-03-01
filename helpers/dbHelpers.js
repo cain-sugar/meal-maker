@@ -43,13 +43,8 @@ const selectAllRecipes = (callback) => {
 };
 
 const saveRecipe = (recipeName, idOriginalDB, recipeImageLink, callback) => {
-<<<<<<< HEAD
-  const q = [recipeName, idOriginalDB, recipeImageLink];
-  connection.query('INSERT INTO Recipes (recipe, idRecipieFoodNutrition, recipeImageLink) VALUES (?, ?, ?)', q, (err, results) => {
-=======
   let q = [recipeName, idOriginalDB, recipeImageLink];
   connection.query('INSERT INTO Recipes (recipe, idRecipeFoodNutrition, recipeImageLink) VALUES (?, ?, ?)', q, (err, results) => {
->>>>>>> 2e86154f78d9d6fc40c76275352baf521a5b3020
     if (err) {
       callback(err, null);
     } else {
