@@ -8,7 +8,7 @@
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
-const connection = require('../database/index.js').connection;
+const { connection } = require('../database/index.js');
 
 const selectSingleRecipeById = (idOriginalDB, callback) => {
   connection.query(`SELECT * FROM Recipes WHERE idRecipieFoodNutrition = ${idOriginalDB}`, (err, recipe) => {
@@ -40,10 +40,10 @@ const selectAllRecipes = (callback) => {
       callback(null, results);
     }
   });
-}
+};
 
 const saveRecipe = (recipeName, idOriginalDB, recipeImageLink, callback) => {
-  let q = [recipeName, idOriginalDB, recipeImageLink];
+  const q = [recipeName, idOriginalDB, recipeImageLink];
   connection.query('INSERT INTO Recipes (recipe, idRecipieFoodNutrition, recipeImageLink) VALUES (?, ?, ?)', q, (err, results) => {
     if (err) {
       callback(err, null);
@@ -59,11 +59,11 @@ const selectLikedRecipes = (userId, callback) => {
       return callback(err, null);
     }
     return callback(null, recipes);
-  })
-}
+  });
+};
 
 const saveLikedRecipe = (userId, recipeId, callback) => {
-  let q = [userId, recipeId];
+  const q = [userId, recipeId];
   connection.query('INSERT INTO Saved (idUsers, idRecipes) VALUES (?, ?)', q, (err, results) => {
     if (err) {
       callback(err, null);
@@ -80,11 +80,11 @@ const selectAllRecipeOfTheDay = (callback) => {
     } else {
       callback(null, recipes);
     }
-  })
+  });
 };
 
 const saveRecipeOfTheDay = (revcipeName, videoLink, recipeInstructions, ourDbRecipeId, cooktime, recipeImageLink, currentDate) => {
-  let q = [revcipeName, videoLink, recipeInstructions, ourDbRecipeId, cooktime, recipeImageLink, currentDate];
+  const q = [revcipeName, videoLink, recipeInstructions, ourDbRecipeId, cooktime, recipeImageLink, currentDate];
   connection.query('INSERT INTO RecipeOfTheDay (name, link, instructions, idRecipe, cooktime, recipeImageLink, date) VALUES (?, ?, ?, ?, ?, ?, ?)', q, (err, results) => {
     if (err) {
       console.log('could not save recipe of the day to database');
@@ -115,7 +115,7 @@ const selectDislikedRecipes = (userId, callback) => {
 };
 
 const dislikeRecipe = (userId, recipeName, callback) => {
-  let q = [userId, recipeName];
+  const q = [userId, recipeName];
   connection.query('INSERT INTO Dislikes (idUsers, idRecipes) VALUES (?, ?)', q, (err, results) => {
     if (err) {
       callback(err, null);
@@ -126,7 +126,7 @@ const dislikeRecipe = (userId, recipeName, callback) => {
 };
 
 const saveIngredient = (ingredientItem) => {
-  let q = [ingredientItem];
+  const q = [ingredientItem];
   connection.query('INSERT INTO Ingredient (ingredient) VALUES (?)', q, (err, results) => {
     if (err) {
       console.log('error in saving ingredient to db');
@@ -137,7 +137,7 @@ const saveIngredient = (ingredientItem) => {
 };
 
 const saveRecipeIngredient = (recipeId, ingredientId) => {
-  let q = [recipeId, ingredientId];
+  const q = [recipeId, ingredientId];
   connection.query('INSERT INTO recipesIngredients (idRecipe, ingredients) VALUES (?, ?)', q, (err, results) => {
     if (err) {
       console.log('error in saving id pairs to db');
@@ -183,9 +183,7 @@ const saveUser = (username, password, loggedin, callback) => {
   const salt = crypto.randomBytes(16).toString('hex');
   const q = [username, crypto.pbkdf2Sync(password, salt, 500, 512, 'sha512').toString('hex'), salt, loggedin];
   return selectAllUsers((err, users) => {
-    const previousInstance = _.filter(users, (oldUser) => {
-      return oldUser.username === username;
-    }).length;
+    const previousInstance = _.filter(users, oldUser => oldUser.username === username).length;
     if (previousInstance === 0) {
       return connection.query('INSERT INTO Users (username, password, salt, loggedIn) VALUES (?, ?, ?, ?)', q, (err) => {
         if (err) {
@@ -193,9 +191,7 @@ const saveUser = (username, password, loggedin, callback) => {
           callback(err);
         } else {
           return selectAllUsers((err, users) => {
-            const user = users.filter((oldUser) => {
-              return oldUser.username === username;
-            })[0];
+            const user = users.filter(oldUser => oldUser.username === username)[0];
             return callback(null, user);
           });
         }
@@ -215,18 +211,14 @@ const logoutUser = (username) => {
   });
 };
 
-const validatePassword = (username, password, callback) => {
-  return selectAllUsers((err, users) => {
-    const user = _.filter(users, (oldUser) => {
-      return oldUser.username === username;
-    })[0];
-    const hash = crypto.pbkdf2Sync(password, user.salt, 500, 512, 'sha512').toString('hex');
-    if (user.password === hash) {
-      loginUser(username);
-      return callback(null, user);
-    }
-  });
-};
+const validatePassword = (username, password, callback) => selectAllUsers((err, users) => {
+  const user = _.filter(users, (oldUser) => oldUser.username === username)[0];
+  const hash = crypto.pbkdf2Sync(password, user.salt, 500, 512, 'sha512').toString('hex');
+  if (user.password === hash) {
+    loginUser(username);
+    return callback(null, user);
+  }
+});
 
 const generateJWT = (username, id, callback) => {
   const today = new Date();
@@ -234,33 +226,41 @@ const generateJWT = (username, id, callback) => {
   expirationDate.setDate(today.getDate() + 60);
   return callback(jwt.sign({
     user: username,
-    id: id,
+    id,
     exp: parseInt(expirationDate.getTime() / 1000, 10),
   }, 'secret'));
 };
 
-const toAuthJSON = (username, callback) => {
-  return selectAllUsers((err, users) => {
-    const user = _.filter(users, (oldUser) => {
-      return oldUser.username === username;
-    })[0];
-    const returnObject = {
-      id: user.id,
-      username: user.username,
-      token: generateJWT(username, user.id, (res) => {
-        return res;
-      }),
-    };
-    callback(returnObject);
-  });
-};
+const toAuthJSON = (username, callback) => selectAllUsers((err, users) => {
+  const user = _.filter(users, oldUser => oldUser.username === username)[0];
+  const returnObject = {
+    id: user.id,
+    username: user.username,
+    token: generateJWT(username, user.id, res => res),
+  };
+  callback(returnObject);
+});
 
 const loginUser = (username) => {
-  connection.query(`UPDATE Users SET loggedIn = 'true' WHERE username = '${username}'`, (err) => {
+  connection.query('UPDATE Users SET loggedIn=? WHERE username=?', [true, username], (err) => {
     if (err) {
       console.log(err);
     } else {
       console.log('Successfully logged in user');
+    }
+  });
+};
+
+const saveAllergies = (allergies, username) => {
+  connection.query('SELECT id FROM Users WHERE username=?', username, (err, data) => {
+    if (err) {
+      console.error(err);
+    } else {
+      for (allergy of allergies) {
+        connection.query('INSERT INTO Allergies (userId, allergy) VALUES (?, ?)', [data[0], allergy], () => {
+          console.log('Allergies saved!');
+        });
+      }
     }
   });
 };
