@@ -43,7 +43,7 @@ const selectAllRecipes = (callback) => {
 };
 
 const saveRecipe = (recipeName, idOriginalDB, recipeImageLink, callback) => {
-  let q = [recipeName, idOriginalDB, recipeImageLink];
+  const q = [recipeName, idOriginalDB, recipeImageLink];
   connection.query('INSERT INTO Recipes (recipe, idRecipeFoodNutrition, recipeImageLink) VALUES (?, ?, ?)', q, (err, results) => {
     if (err) {
       callback(err, null);
@@ -212,7 +212,7 @@ const logoutUser = (username) => {
 };
 
 const validatePassword = (username, password, callback) => selectAllUsers((err, users) => {
-  const user = _.filter(users, (oldUser) => oldUser.username === username)[0];
+  const user = _.filter(users, oldUser => oldUser.username === username)[0];
   const hash = crypto.pbkdf2Sync(password, user.salt, 500, 512, 'sha512').toString('hex');
   if (user.password === hash) {
     loginUser(username);
@@ -261,7 +261,10 @@ const saveAllergies = (allergies, username) => {
           console.log('Allergies saved!');
         });
       }
-      
+    }
+  });
+};
+
 const addOriginalRecipe = (recipeName, ingredients, instructions, cookTime) => {
   const q = [recipeName, ingredients, instructions, cookTime];
   connection.query('INSERT INTO originalRecipes (recipe_name, ingredients, instructions, cookTime) VALUES (?, ?, ?, ?)', q, (err, results) => {
@@ -274,5 +277,27 @@ const addOriginalRecipe = (recipeName, ingredients, instructions, cookTime) => {
 };
 
 module.exports = {
-  addOriginalRecipe, selectSingleRecipeById, toAuthJSON, validatePassword, selectSingleRecipeByName, selectAllRecipes, saveRecipe, selectLikedRecipes, saveLikedRecipe, selectAllRecipeOfTheDay, saveRecipeOfTheDay, updateRecipeOfTheDay, selectDislikedRecipes, dislikeRecipe, saveIngredient, saveRecipeIngredient, getRecipeIngredients, selectAllIngredients, selectAllUsers, saveUser, logoutUser, loginUser,
+  addOriginalRecipe,
+  selectSingleRecipeById,
+  toAuthJSON,
+  validatePassword,
+  selectSingleRecipeByName,
+  selectAllRecipes,
+  saveRecipe,
+  selectLikedRecipes,
+  saveLikedRecipe,
+  selectAllRecipeOfTheDay,
+  saveRecipeOfTheDay,
+  updateRecipeOfTheDay,
+  selectDislikedRecipes,
+  dislikeRecipe,
+  saveIngredient,
+  saveRecipeIngredient,
+  getRecipeIngredients,
+  selectAllIngredients,
+  selectAllUsers,
+  saveUser,
+  logoutUser,
+  loginUser,
+  saveAllergies,
 };
