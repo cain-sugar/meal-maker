@@ -13,7 +13,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: process.env.DB_NAME,
+  database: 'mealmaker',
 });
 
 connection.connect((err) => {

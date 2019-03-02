@@ -27,55 +27,47 @@ const youTubeApi = (query, callback) => axios({
 });
 
 
-const findRecipeIdOfUnwantedIngredients = (unwantedIngredients, callback) => {
-  if (!callback) {
-    return Error('Function requires callback!!!');
-  }
-  if (!unwantedIngredients) {
-    callback(null, undefined);
-  }
+const findRecipeIdOfUnwantedIngredients = (unwantedIngredients) => {
+
   return axios({
     method: 'get',
     headers: {
-      'X-RapidAPI-Key': '2ec86674c2msh2b69061509e314bp1a1e51jsn9c448f4a87ea',
+      'X-RapidAPI-Key': process.env.X_RapidAPI_Key,
     },
-    url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search?excludeIngredients=${unwantedIngredients}&number=100`
+    url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=100&ranking=1&ingredients=${unwantedIngredients}`
+    // https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search?excludeIngredients=${unwantedIngredients}&number=500
     ,
   }).then((result) => {
     // console.log(result.data.results);
-    const recipeId = [];
-    _.forEach(result.data.results, (recipe) => {
-      recipeId.push(recipe.id);
+    return _.map(result.data, (recipe) => {
+      return recipe;
     });
-    callback(null, recipeId);
-    a = recipeId;
     // console.log(acceptedRecipies, 'apiHelper!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  }).catch(() => {
-    console.log(505);
   });
 };
 
 
-const recFoodNutrApi = async (ingredients, callback) => {
-  if (!callback) {
-    return Error('Function requires callback!!!');
-  }
+const recFoodNutrApi = (ingredients) => {
+
   // get 20 recipies based upon input ingredients
-  await axios({
+  return axios({
     method: 'get',
     headers: {
-      'X-RapidAPI-Key': '2ec86674c2msh2b69061509e314bp1a1e51jsn9c448f4a87ea',
+      'X-RapidAPI-Key': process.env.X_RapidAPI_Key,
     },
-    url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex?includeIngredients=${ingredients}&ranking=1&fillIngredients=true&instructionsRequired=true&addRecipeInformation=true&limitLicense=true&offset=0&number=100`,
+    url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=100&ranking=1&ingredients=${ingredients}`,
   }).then((result) => {
     // return sorted and reversed recipies array
-    // console.log(result.data.results.id, '!!!!!!!!!!!!!!!!!!!!??????????????????????????????????????????? apiHelper');
-    const recipes = [];
+    // console.log(result.data, '!!!!!!!!!!!!!!!!!!!!??????????????????????????????????????????? apiHelper');
+    // const recipes = [];
     const acceptedRecipies = [];
-    _.forEach(result.data.results, (recipe) => {
+    return _.map(result.data, (recipe) => {
+      return recipe;
+    });
+    // _.forEach(result.data, (recipe) => {
       // object to store recipe info
       // console.log(recipe.id, '?????????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!????????????????');
-      acceptedRecipies.push(recipe.id);
+      // acceptedRecipies.push(recipe);
       //   const recipeInfo = {};
       //   recipeInfo.name = recipe.title;
       //   recipeInfo.recipeId = recipe.id;
@@ -96,7 +88,6 @@ const recFoodNutrApi = async (ingredients, callback) => {
       //       });
       //     }
       //   });
-
       //   recipeInfo.percentage = Math.round(recipeInfo.ingredients.usedIngredients.length / recipeInfo.ingredients.allIngredients.length * 100);
       //   return youTubeApi(`cook ${recipeInfo.name}`, (err, video) => {
       //     recipeInfo.videoId = video.id.videoId;
@@ -107,12 +98,12 @@ const recFoodNutrApi = async (ingredients, callback) => {
       //     }
       //   });
       // });
-    });
+    // });
     // console.log(acceptedRecipies, '!!!!!!!!!!!!@2222222222222222!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    callback(null, acceptedRecipies);
-    console.log(a);
-    return findRecipeIdOfUnwantedIngredients();
-  }).catch(err => callback(err, null));
+    return acceptedRecipies;
+    // console.log(a);
+    // return findRecipeIdOfUnwantedIngredients();
+  });
 };
 
 
@@ -206,8 +197,8 @@ const autoComplete = async (term) => {
      'cache-control': 'no-cache',
      'Content-Type': 'application/json',
      'x-remote-user-id': '0',
-     'x-app-id': process.env.IX_APP_ID,
-     'x-app-key': process.env.NIX_API,
+      'x-app-id': process.env.IX_APP_ID,
+      'x-app-key': process.env.NIX_API,
    },
   });
   return instantList;
