@@ -297,30 +297,38 @@ app.post('/disliked', (req, res) => {
 // when client wants to retrieve all the saved recipes for a particular user
 app.get('/savedrecipes', (req, res) => {
   const { userId } = req.query;
-  db.selectLikedRecipes(userId, (err, results) => {
+  // db.selectLikedRecipes(userId, (err, results) => {
+  //   if (err) {
+  //     res.status(500).send('Something went wrong!');
+  //   }
+  //   else {
+  //     console.log('next step');
+  //     // get the recipeIds from the DB
+  //     const recipeIds = results.map(result => result.idRecipes);
+
+  //     const recipesObj = [];
+  //     // get an array of objects named recipeInfo from rfn and youtube for each id
+  //     const recipesInfo = recipeIds.forEach((id, index) => helper.rfnSingleRecipe(id, (err, result) => {
+  //       if (err) {
+  //         console.log(err, 'error in getting recipe saved');
+  //         return;
+  //       }
+  //       console.log(`${result}, from saved db`);
+  //       recipesObj.push(result);
+
+  //       if (index === recipeIds.length - 1) {
+  //         res.status(200).send(recipesObj); // send that array back to client
+  //       }
+  //       console.log(recipesObj);
+  //     }));
+  //   }
+  // });
+  db.showOriginalRecipes(userId, (err, results) => {
     if (err) {
-      res.status(500).send('Something went wrong!');
-    }
-    else {
-      console.log('next step');
-      // get the recipeIds from the DB
-      const recipeIds = results.map(result => result.idRecipes);
-
-      const recipesObj = [];
-      // get an array of objects named recipeInfo from rfn and youtube for each id
-      const recipesInfo = recipeIds.forEach((id, index) => helper.rfnSingleRecipe(id, (err, result) => {
-        if (err) {
-          console.log(err, 'error in getting recipe saved');
-          return;
-        }
-        console.log(`${result}, from saved db`);
-        recipesObj.push(result);
-
-        if (index === recipeIds.length - 1) {
-          res.status(200).send(recipesObj); // send that array back to client
-        }
-        console.log(recipesObj);
-      }));
+      console.log(err);
+    } else {
+      console.log(results);
+      res.status(200).send(results);
     }
   });
 });
@@ -364,7 +372,7 @@ app.post('/toBeSavedDislike', (req, res) => {
 });
 
 app.post('/originalRecipes', (req, res) => {
-  db.addOriginalRecipe(req.body.name, req.body.ingredients, req.body.instructions, req.body.cooktime, req.body.username, (err, results) => {
+  db.addOriginalRecipe(req.body.name, req.body.ingredients, req.body.instructions, req.body.cooktime, req.body.userId, req.body.username, (err, results) => {
     if (err) {
       console.log(err);
     } else {

@@ -25,7 +25,22 @@ const SavedRecipeListItem = ({ savedRecipe, changeView, selectRecipe }) => (
                 {savedRecipe.name}
               </b>
             </div>
-            <div className="cookTime">
+            <div className="origRecipeName">
+              Recipe Name:
+              {' '}
+              {savedRecipe.recipe_name}
+            </div>
+            <div className="origRecipeIngredients">
+              Ingredients:
+              {' '}
+              {savedRecipe.ingredients}
+            </div>
+            <div className="origRecipeInstructions">
+              Instructions:
+              {' '}
+              {savedRecipe.instructions}
+            </div>
+            <div className="origCookTime">
             Cook Time:
               {' '}
               {savedRecipe.cookTime}

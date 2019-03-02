@@ -34,7 +34,7 @@ class GreetForm extends Component {
           steps={[
             {
               id: '1',
-              message: `Hello ${user}, I am 'CAIN', (Client. Appitite. Indulgence. Network).`,
+              message: `Hello ${user}, I am 'CAIN', (Client. Appetite. Indulgence. Network).`,
               trigger: '3',
             },
             {
