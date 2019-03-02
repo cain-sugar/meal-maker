@@ -35,28 +35,39 @@ if (!isProduction) {
 }
 
 // get recipies depending upon passed in ingredients //
+// req.query.unwantedIngredientList - for kaelyn, later
 app.get('/food', (req, res) => {
   helper.recFoodNutrApi(req.query.ingredients, (err, recipes) => {
     if (err) {
-      console.log(err);
+      // console.log(err);
       return res.status(500).send('Something went wrong!');
     }
+    console.log(recipes, 'server line 45!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    res.send(recipes);
+    /*
     // respond with an array of objects which contain recipe information
-    console.log(recipes);
+    // console.log(recipes);
     db.selectAllRecipes((error, savedRecipes) => {
       if (err) {
-        return console.log(error);
+        return; // console.log(error);
       }
+
       _.forEach(recipes, (recipe) => {
+        // previous instance is chacking the db if the recipe is in the db
+        // It goes through the saved recipes in the db and if the savedRecipe.recipe (from DB) == the recipe.name
+        // query-ed from the API. If there are no results the previous instance will be 0. If there is a match, it will
+        // be greater than 0.
         const previousInstances = _.filter(savedRecipes, savedRecipe => savedRecipe.recipe === recipe.name).length;
         if (previousInstances === 0) {
+          // If it's not in the DB, the recipe will be save to the db.
           db.saveRecipe(recipe.name, recipe.recipeId, recipe.image, (err) => {
             if (err) {
-              console.log(err);
+              // console.log(err);
             }
+
             db.selectSingleRecipeById(recipe.recipeId, (err, singleRecipeArray) => {
               if (err) {
-                console.log(err);
+                // console.log(err);
               }
               _.forEach(recipe.ingredients.allIngredients, (ingredient) => {
                 db.saveRecipeIngredient(singleRecipeArray[0].id, ingredient);
@@ -74,13 +85,27 @@ app.get('/food', (req, res) => {
         const filtered = _.filter(recipes, (recipe) => {
           return !_.includes(recipeNames, recipe.recipeId.toString());
         });
-        console.log(filtered);
+        // console.log(filtered);
         return res.status(200).send(filtered);
       });
     }
     return res.status(200).send(recipes);
+    */
   });
 });
+
+app.get('/unwantedIngredients', (req, res) => {
+  // helper function
+  // console.log(req.query.unwantedIngredientList);
+  helper.findRecipeIdOfUnwantedIngredients(req.query.unwantedIngredientList, (err, unwantedRecipeId) => {
+    if (err) {
+      return err;
+    }
+    // console.log(unwantedRecipeId, 'server, line 103!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    res.send(unwantedRecipeId);
+  });
+});
+
 
 // get all ingredients stored in the MealDB //
 app.get('/ingredients', (req, res) => {
@@ -108,7 +133,7 @@ app.get('/ingredients', (req, res) => {
 app.get('/single', (req, res) => {
   db.selectSingleRecipeByName(req.body.recipeName, (err, singleRecipeArray) => {
     if (err) {
-      console.log(err);
+      // console.log(err);
       return res.status(500).send('Something went wrong!');
     }
     // get a recipe's info throuhg its id
@@ -213,22 +238,22 @@ app.get('/search', (req, res) => {
 
 // when client requests to sign up/create a new user
 app.post('/signup', (req, res) => {
-  console.log(req.body, typeof (req.body.params.username), 'BODY');
+  // console.log(req.body, typeof (req.body.params.username), 'BODY');
   if (!req.body.params.username || !req.body.params.password || req.body.params.password === '' || req.body.params.username === '') {
     return res.status(500).redirect('/restrictedhome');
   }
   return db.selectAllUsers((err, users) => {
     if (err) {
-      console.error(err);
+      // console.error(err);
     }
     const sameNameCounter = _.filter(users, user => user.username === req.body.params.username).length;
     if (sameNameCounter === 0) {
       process.env.LOCAL_USER = req.body.params.username;
       db.saveUser(req.body.params.username, helper.hasher(req.body.params.password), true, (err, result) => {
         if (err) {
-          console.log(err, 'HEY not Saved');
+          // console.log(err, 'HEY not Saved');
         } else {
-          console.log(result, 'Saved user')
+          // console.log(result, 'Saved user')
         }
       });
       return res.status(204).redirect('/home');
@@ -239,7 +264,7 @@ app.post('/signup', (req, res) => {
 
 // when client requests to login => authentication request
 app.get('/login', (req, res) => {
-  console.log(req, 'LOGIN Parm');
+  // console.log(req, 'LOGIN Parm');
   db.selectAllUsers((err, users) => {
     const user = _.filter(users, storedUser => storedUser.username === req.query.username)[0];
     if (user) {
@@ -289,7 +314,7 @@ app.get('/savedrecipes', (req, res) => {
       res.status(500).send('Something went wrong!');
     }
     else {
-      console.log('next step');
+      // console.log('next step');
       // get the recipeIds from the DB
       const recipeIds = results.map(result => result.idRecipes);
 
@@ -297,16 +322,16 @@ app.get('/savedrecipes', (req, res) => {
       // get an array of objects named recipeInfo from rfn and youtube for each id
       const recipesInfo = recipeIds.forEach((id, index) => helper.rfnSingleRecipe(id, (err, result) => {
         if (err) {
-          console.log(err, 'error in getting recipe saved');
+          // console.log(err, 'error in getting recipe saved');
           return;
         }
-        console.log(`${result}, from saved db`);
+        // console.log(`${result}, from saved db`);
         recipesObj.push(result);
 
         if (index === recipeIds.length - 1) {
           res.status(200).send(recipesObj); // send that array back to client
         }
-        console.log(recipesObj);
+        // console.log(recipesObj);
       }));
     }
   });
@@ -322,7 +347,7 @@ app.post('/toBeSaved', (req, res) => {
         if (err) {
           return res.status(500).send('Something Went Wrong!');
         }
-        console.log('recipe saved into DB');
+        // console.log('recipe saved into DB');
         return res.status(204).send('Saved Recipe To The Saved Table');
       });
     }
@@ -342,7 +367,7 @@ app.post('/toBeSavedDislike', (req, res) => {
         if (err) {
           return res.status(500).send('Something Went Wrong!');
         }
-        console.log('recipe saved into DB dislike table');
+        // console.log('recipe saved into DB dislike table');
         return res.status(204).send('Saved Recipe To The Dislike Table');
       });
     }

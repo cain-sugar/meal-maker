@@ -13,6 +13,7 @@ const _ = require('lodash');
 
 
 // search for videos based on the query
+
 const youTubeApi = (query, callback) => axios({
   method: 'get',
   url: `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=${process.env.YOUTUBE_API_KEY}&q=${query}&maxResults=1`,
@@ -20,57 +21,96 @@ const youTubeApi = (query, callback) => axios({
   // preform a callback with the first object full of video data from the search results
   callback(null, searchResults.data.items[0]);
 }).catch((err) => {
-  console.log(err);
+  // console.log(err);
   callback(err, null);
 });
-const recFoodNutrApi = (ingredients, callback) => {
+
+
+const findRecipeIdOfUnwantedIngredients = (unwantedIngredients, callback) => {
+  if (!callback) {
+    return Error('Function requires callback!!!');
+  }
+  if (!unwantedIngredients) {
+    callback(null, undefined);
+  }
+  return axios({
+    method: 'get',
+    headers: {
+      'X-RapidAPI-Key': '2ec86674c2msh2b69061509e314bp1a1e51jsn9c448f4a87ea',
+    },
+    url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search?excludeIngredients=${unwantedIngredients}&number=100`
+    ,
+  }).then((result) => {
+    // console.log(result.data.results);
+    const recipeId = [];
+    _.forEach(result.data.results, (recipe) => {
+      recipeId.push(recipe.id);
+    });
+    callback(null, recipeId);
+    // console.log(recipeId, 'apiHelper!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  }).catch(() => {
+    console.log(505);
+  });
+};
+
+
+const recFoodNutrApi = async (ingredients, callback) => {
   if (!callback) {
     return Error('Function requires callback!!!');
   }
   // get 20 recipies based upon input ingredients
-  return axios({
+  await axios({
     method: 'get',
     headers: {
-      'X-RapidAPI-Key': process.env.RECIPE_FOOD_NUTRITION_API_KEY,
+      'X-RapidAPI-Key': '2ec86674c2msh2b69061509e314bp1a1e51jsn9c448f4a87ea',
     },
-    url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex?includeIngredients=${ingredients}&ranking=1&fillIngredients=true&instructionsRequired=true&addRecipeInformation=true&limitLicense=true&offset=0&number=10`,
+    url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex?includeIngredients=${ingredients}&ranking=1&fillIngredients=true&instructionsRequired=true&addRecipeInformation=true&limitLicense=true&offset=0&number=100`,
   }).then((result) => {
     // return sorted and reversed recipies array
+    // console.log(result.data.results.id, '!!!!!!!!!!!!!!!!!!!!??????????????????????????????????????????? apiHelper');
     const recipes = [];
-    _.forEach(result.data.results, (recipe, index) => {
+    const acceptedRecipies = [];
+    _.forEach(result.data.results, (recipe) => {
       // object to store recipe info
-      const recipeInfo = {};
-      recipeInfo.name = recipe.title;
-      recipeInfo.recipeId = recipe.id;
-      recipeInfo.cookTime = recipe.readyInMinutes;
-      recipeInfo.image = recipe.image;
-      recipeInfo.instructions = _.map(recipe.analyzedInstructions[0].steps, instruction => instruction.step);
-      recipeInfo.ingredients = {};
-      recipeInfo.ingredients.missedIngredients = _.map(recipe.missedIngredients, ingredient => ingredient.originalString);
-      recipeInfo.ingredients.usedIngredients = _.map(recipe.usedIngredients, ingredient => ingredient.originalString);
-      recipeInfo.ingredients.unusedIngredients = _.map(recipe.unusedIngredients, ingredient => ingredient.originalString);
-      recipeInfo.ingredients.allIngredients = [];
-      _.forEach(recipeInfo.ingredients, (ingredientList, key) => {
-        if (key !== 'unusedIngredients') {
-          _.forEach(ingredientList, (ingredient) => {
-            if (!_.includes(recipeInfo.ingredients.allIngredients, ingredient)) {
-              recipeInfo.ingredients.allIngredients.push(ingredient);
-            }
-          });
-        }
-      });
-      recipeInfo.percentage = Math.round(recipeInfo.ingredients.usedIngredients.length / recipeInfo.ingredients.allIngredients.length * 100);
-      return youTubeApi(`cook ${recipeInfo.name}`, (err, video) => {
-        recipeInfo.videoId = video.id.videoId;
-        recipes.push(recipeInfo);
-        // console.log(recipes);
-        if (index === result.data.results.length - 1) {
-          return callback(null, recipes);
-        }
-      });
+      console.log(recipe.id, '?????????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!????????????????');
+      acceptedRecipies.push(recipe.id);
+      //   const recipeInfo = {};
+      //   recipeInfo.name = recipe.title;
+      //   recipeInfo.recipeId = recipe.id;
+      //   recipeInfo.cookTime = recipe.readyInMinutes;
+      //   recipeInfo.image = recipe.image;
+      //   recipeInfo.instructions = _.map(recipe.analyzedInstructions[0].steps, instruction => instruction.step);
+      //   recipeInfo.ingredients = {};
+      //   recipeInfo.ingredients.missedIngredients = _.map(recipe.missedIngredients, ingredient => ingredient.originalString);
+      //   recipeInfo.ingredients.usedIngredients = _.map(recipe.usedIngredients, ingredient => ingredient.originalString);
+      //   recipeInfo.ingredients.unusedIngredients = _.map(recipe.unusedIngredients, ingredient => ingredient.originalString);
+      //   recipeInfo.ingredients.allIngredients = [];
+      //   _.forEach(recipeInfo.ingredients, (ingredientList, key) => {
+      //     if (key !== 'unusedIngredients') {
+      //       _.forEach(ingredientList, (ingredient) => {
+      //         if (!_.includes(recipeInfo.ingredients.allIngredients, ingredient)) {
+      //           recipeInfo.ingredients.allIngredients.push(ingredient);
+      //         }
+      //       });
+      //     }
+      //   });
+
+      //   recipeInfo.percentage = Math.round(recipeInfo.ingredients.usedIngredients.length / recipeInfo.ingredients.allIngredients.length * 100);
+      //   return youTubeApi(`cook ${recipeInfo.name}`, (err, video) => {
+      //     recipeInfo.videoId = video.id.videoId;
+      //     recipes.push(recipeInfo);
+      //     // console.log(recipes);
+      //     if (index === result.data.results.length - 1) {
+      //       // return callback(null, recipes);
+      //     }
+      //   });
+      // });
     });
+    console.log(acceptedRecipies, '!!!!!!!!!!!!@2222222222222222!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    callback(null, acceptedRecipies);
   }).catch(err => callback(err, null));
 };
+
 
 const rfnRandomRecipe = (callback) => {
   // get request for random recipe
@@ -180,4 +220,5 @@ module.exports = {
   hasher,
   rfnSingleRecipe,
   autoComplete,
+  findRecipeIdOfUnwantedIngredients,
 };

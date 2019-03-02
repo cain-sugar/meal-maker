@@ -53,7 +53,7 @@ class App extends React.Component {
   // function to retrieve recipes to display
   getRecipes(ingredients) { // ingredients is an object with the keys of ingredients and values of (have item or dislike item)
     const { userId } = this.state;
-
+    console.log(ingredients);
     return axios.get('/food', {
       params: {
         userId,
@@ -61,6 +61,7 @@ class App extends React.Component {
       },
     }) // sends a GET request to serve at endpoint '/food'
       .then((results) => {
+        console.log(results);
         this.setState({ // change the state
           recipes: results.data, // by making the data received back fron the server available
         });
@@ -73,14 +74,17 @@ class App extends React.Component {
   getRestrictions(unwantedIngredientList) {
     const { userId } = this.state;
 
-    return axios.get('/food', {
+    return axios.get('/unwantedIngredients', {
       params: {
         userId,
         unwantedIngredientList,
       },
     })
       .then((results) => {
-        // console.log(results);
+        console.log(results);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 

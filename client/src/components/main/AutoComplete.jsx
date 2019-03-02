@@ -72,7 +72,7 @@ class AutoComplete extends React.Component {
 
   handleDelete(label) {
     const { selectedIngredients } = this.state;
-    // const deconstructedIngredientList = { ...selectedIngredients };
+    const deconstructedIngredientList = { selectedIngredients };
     delete deconstructedIngredientList[label];
     this.setState({ selectedIngredients: deconstructedIngredientList });
   }
@@ -107,6 +107,8 @@ class AutoComplete extends React.Component {
   render() {
     const { dislikeText, text, selectedIngredients } = this.state;
     const { getRecipes, unwantedIngredients, wantedIngredients } = this.props;
+    window.wantedIngred = wantedIngredients;
+    window.unwantedIngred = unwantedIngredients;
     return (
       <div className="AutoCompleteComponent">
         <div className="auto-complete">
