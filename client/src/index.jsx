@@ -243,18 +243,13 @@ class App extends React.Component {
   }
 
   saveAllergy(user, allergies) {
-    let bool;
+    console.log('hi');
     axios.post('/allergies', {
       user: {
         user,
         allergies,
       },
-    }).then(() => {
-      bool = true;
-    }).catch(() => {
-      bool = false;
     });
-    return bool;
   }
 
   render() {

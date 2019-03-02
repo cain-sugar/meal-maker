@@ -365,12 +365,9 @@ app.post('/originalRecipes', (req, res) => {
 });
 
 app.post('/allergies', (req, res) => {
+  console.log(req);
   const { body: { user: { user, allergies } } } = req;
-  db.saveAllergies(allergies, user).then(() => {
-    res.send(200);
-  }).catch(() => {
-    res.send(500);
-  });
+  db.saveAllergies(allergies, user)
 });
 
 // Able to set port and still work //

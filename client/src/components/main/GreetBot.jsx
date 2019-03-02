@@ -48,7 +48,7 @@ class GreetForm extends Component {
               validator: (value) => {
                 if (value) {
                   const allergy = value.split(',');
-                  this.setState({ allergies: allergy });
+                  saveAllergy(user, allergy);
                   return true;
                 }
                 return true;

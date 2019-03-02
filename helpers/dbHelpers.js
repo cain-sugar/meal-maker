@@ -253,14 +253,19 @@ const loginUser = (username) => {
 
 const saveAllergies = (allergies, username) => {
   connection.query('SELECT id FROM Users WHERE username=?', username, (err, data) => {
+    console.log(data);
     if (err) {
       console.error(err);
     } else {
-      for (allergy of allergies) {
-        connection.query('INSERT INTO Allergies (userId, allergy) VALUES (?, ?)', [data[0], allergy], () => {
-          console.log('Allergies saved!');
-        });
+      // eslint-disable-next-line no-restricted-syntax
+      for (const allergy of allergies) {
+        connection.query('INSERT INTO Allergies (allergy) VALUES (?)', allergy, () => connection.query('SELECT id FROM Allergies WHERE allergy=?', allergy, (error, allergin) => {
+          connection.query('INSERT INTO userAllergies (userId, allergyId) VALUES (?, ?)', [data[0].id, allergin[0].id], () => {
+            console.log(error);
+          });
+        }));
       }
+      return 'yay';
     }
   });
 };

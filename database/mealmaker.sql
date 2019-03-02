@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS mealmaker;
-CREATE DATABASE mealmaker;
+-- DROP DATABASE IF EXISTS mealmaker;
+-- CREATE DATABASE mealmaker;
 -- command for root user and no password
 -- mysql -u root < database/mealmaker.sql
 
@@ -74,26 +74,24 @@ CREATE TABLE recipesIngredients (
 CREATE TABLE originalRecipes (
   id_original INTEGER AUTO_INCREMENT NOT NULL,
   recipe_name TEXT (40),
-  authorID INTEGER NOT NULL,
   ingredients TEXT NOT NULL,
   instructions TEXT NOT NULL,
   cookTime INTEGER NOT NULL,
   PRIMARY KEY (id_original)
-  FOREIGN KEY (authorID) REFERENCES Users (id)
-)
+);
 
 CREATE TABLE Allergies (
   id INTEGER AUTO_INCREMENT NOT NULL,
   allergy VARCHAR (40),
-  PRIMARY KEY (allergyID)
-)
+  PRIMARY KEY (id)
+);
 
 CREATE TABLE userAllergies (
   userId INTEGER NOT NULL,
   allergyId INTEGER NOT NULL,
   FOREIGN KEY (userId) REFERENCES Users (id),
   FOREIGN KEY (allergyId) REFERENCES Allergies (id)
-)
+);
 
 -- INSERT INTO `Users` (`id`,`username`,`password`) VALUES
 -- ('','','');
