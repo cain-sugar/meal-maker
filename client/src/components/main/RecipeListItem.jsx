@@ -84,7 +84,7 @@ const RecipeListItem = ({ recipe, saveRecipe, saveDislikeRecipe, selectRecipe, c
               </div>
               <div className="ingredients-used">
                 <b>Uses: </b>
-                {recipe.ingredients.usedIngredients}
+                {recipe.ingredients}
                 <br />
                 <b>Match Percentage: </b>
                 {recipe.percentage}

@@ -1,12 +1,11 @@
--- DROP DATABASE IF EXISTS mealmaker;
--- CREATE DATABASE mealmaker;
+DROP DATABASE IF EXISTS mealmaker;
+CREATE DATABASE mealmaker;
 -- command for root user and no password
 -- mysql -u root < database/mealmaker.sql
 
 USE mealmaker;
--- DROP TABLE IF EXISTS Users;
-        
--- USERS table to hold id, username, and hashed password
+DROP TABLE IF EXISTS Users;
+
 CREATE TABLE Users (
   id INTEGER AUTO_INCREMENT NOT NULL,
   username VARCHAR(50) NOT NULL,
@@ -16,12 +15,10 @@ CREATE TABLE Users (
   PRIMARY KEY (id)
 );
 
--- 
--- RECIPES TABLE that holds the recipe name and ID for query 
 CREATE TABLE Recipes (
   id INTEGER AUTO_INCREMENT NOT NULL,
   recipe TEXT(255) NOT NULL,
-  idRecipieFoodNutrition INTEGER NOT NULL,
+  idRecipeFoodNutrition INTEGER NOT NULL,
   recipeImageLink VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
@@ -32,29 +29,26 @@ CREATE TABLE Ingredient (
   ingredient VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
--- --
--- Dislikes table, holds user's disliked recipes 
+
+
 CREATE TABLE Dislikes (
   id INTEGER AUTO_INCREMENT NOT NULL,
   idUsers INTEGER NOT NULL,
   idRecipes INTEGER (7) NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (idUsers) REFERENCES Users (id),
-  FOREIGN KEY (idRecipes) REFERENCES Recipes (id)
+  FOREIGN KEY (idUsers) REFERENCES Users (id)
 );
--- --
--- Saved recipes, holds user's id and id recipe      
+
+
 CREATE TABLE Saved (
   id INTEGER AUTO_INCREMENT NOT NULL,
   idUsers INTEGER NOT NULL,
   idRecipes INTEGER NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (idUsers) REFERENCES Users (id),
-  FOREIGN KEY (idRecipes) REFERENCES Recipes (id)
+  FOREIGN KEY (idUsers) REFERENCES Users (id)
 );
--- --
 
--- RECIPE OF THE DAY, holds recipes so there are no repeats for recipe of the day
+
 CREATE TABLE RecipeOfTheDay (
   id INTEGER AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -64,20 +58,39 @@ CREATE TABLE RecipeOfTheDay (
   recipeImageLink VARCHAR(255) NOT NULL,
   cookTime INTEGER NOT NULL,
   date INTEGER NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (idRecipe) REFERENCES Recipes (id)
+  PRIMARY KEY (id)
 );
--- --
 
--- RECIPE'S INGREDIENTS use to keep record for comparison    
--- One recipe id may have multiple idIngredients     
+
 CREATE TABLE recipesIngredients (
   id INTEGER AUTO_INCREMENT NOT NULL,
   idRecipes INTEGER NOT NULL,
   idIngredients INTEGER NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (idRecipes) REFERENCES Recipes (id),
-  FOREIGN KEY (idIngredients) REFERENCES Ingredient (id)
+  FOREIGN KEY (idRecipes) REFERENCES Recipes (id)
+);
+
+
+CREATE TABLE originalRecipes (
+  id_original INTEGER AUTO_INCREMENT NOT NULL,
+  recipe_name TEXT (40),
+  ingredients TEXT NOT NULL,
+  instructions TEXT NOT NULL,
+  cookTime INTEGER NOT NULL,
+  PRIMARY KEY (id_original)
+);
+
+CREATE TABLE Allergies (
+  id INTEGER AUTO_INCREMENT NOT NULL,
+  allergy VARCHAR (40),
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE userAllergies (
+  userId INTEGER NOT NULL,
+  allergyId INTEGER NOT NULL,
+  FOREIGN KEY (userId) REFERENCES Users (id),
+  FOREIGN KEY (allergyId) REFERENCES Allergies (id)
 );
 
 -- INSERT INTO `Users` (`id`,`username`,`password`) VALUES
@@ -97,7 +110,6 @@ CREATE TABLE recipesIngredients (
 --
 
 -- Foreign Keys 
---
 -- ALTER TABLE Dislikes ADD CONSTRAINT FOREIGN KEY (idUsers) REFERENCES Users (id);
 -- ALTER TABLE Dislikes ADD FOREIGN KEY (idRecipes) REFERENCES Recipes (id);
 -- ALTER TABLE Saved ADD FOREIGN KEY (idUsers) REFERENCES Users (id);
@@ -105,9 +117,7 @@ CREATE TABLE recipesIngredients (
 -- ALTER TABLE `Recipe of the Day` ADD FOREIGN KEY (idRecipe) REFERENCES Recipes (id);
 -- ALTER TABLE `recipe's` ingredients ADD FOREIGN KEY (idRecipes) REFERENCES Recipes (id);
 -- ALTER TABLE `recipe's` ingredients ADD FOREIGN KEY (idIngredients) REFERENCES Ingredients (id);
---
 -- Table Properties
---
 -- ALTER TABLE `Users` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 -- ALTER TABLE `Recipes` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 -- ALTER TABLE `Ingredients` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

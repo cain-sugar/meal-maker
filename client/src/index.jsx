@@ -5,7 +5,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import ChatBot from 'react-simple-chatbot';
+import Snackbar from '@material-ui/core/Snackbar';
 import Login from './components/login/Login.jsx';
 import randomRecipe from '../example_random.js';
 import Main from './components/main/Main.jsx';
@@ -26,6 +26,11 @@ class App extends React.Component {
       authorized: false,
       show: 'login',
       userName: '',
+      buttonClicked: false,
+      whichFailed: null,
+      searchInProgress: false,
+      open: false,
+      message: '',
     };
     // binding all functions to the index component
     this.getRandomRecipe = this.getRandomRecipe.bind(this);
@@ -36,7 +41,10 @@ class App extends React.Component {
     this.selectRecipe = this.selectRecipe.bind(this);
     this.signUp = this.signUp.bind(this);
     this.login = this.login.bind(this);
-    this.getRestrictions = this.getRestrictions.bind(this);
+    // this.getRestrictions = this.getRestrictions.bind(this);
+    this.logout = this.logout.bind(this);
+    this.autoIngredient = this.autoIngredient.bind(this);
+    // this.getRestrictions = this.getRestrictions.bind(this);
   }
 
   componentDidMount() {
@@ -51,42 +59,59 @@ class App extends React.Component {
   }
 
   // function to retrieve recipes to display
-  getRecipes(ingredients) { // ingredients is an object with the keys of ingredients and values of (have item or dislike item)
+  getRecipes(ingredients, unwantedIngredientList) {
+    // this.setState({ searchInProgress: true });
     const { userId } = this.state;
-    console.log(ingredients);
+    // console.log(ingredients);
     return axios.get('/food', {
       params: {
         userId,
         ingredients,
+        unwantedIngredientList,
       },
     }) // sends a GET request to serve at endpoint '/food'
       .then((results) => {
-        console.log(results);
+        setTimeout(() => this.setState({ searchInProgress: false }), 500);
+        const accepted = results.data.recipes.map((ele) => {
+          return ele.id;
+        });
+        const rejected = results.data.unwanted.map((ele) => {
+          return ele.id;
+        });
+
+
+        const filtered = (results.data.recipes).filter((recipe) => {
+          return !(rejected).includes(recipe.id);
+        });
+        console.log(accepted);
+        console.log(rejected);
+        console.log(filtered);
         this.setState({ // change the state
-          recipes: results.data.slice(0, 10), // by making the data received back fron the server available
+          recipes: filtered.slice(0, 10), // by making the data received back fron the server available
         });
       }).catch((err) => {
-        // console.log(err, 'error while retrieving data from server');
+        setTimeout(() => this.setState({ searchInProgress: false }), 500);
+        console.log(err, 'error while retrieving data from server');
       });
   }
 
   // function to get recipes that follow restrictions. Id from these will be compared with the values above
-  getRestrictions(unwantedIngredientList) {
-    const { userId } = this.state;
+  // getRestrictions(unwantedIngredientList) {
+  //   const { userId } = this.state;
 
-    return axios.get('/unwantedIngredients', {
-      params: {
-        userId,
-        unwantedIngredientList,
-      },
-    })
-      .then((results) => {
-        console.log(results);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+  //   return axios.get('/unwantedIngredients', {
+  //     params: {
+  //       userId,
+  //       unwantedIngredientList,
+  //     },
+  //   })
+  //     .then((results) => {
+  //       console.log(results);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }
 
   // function to retrieve the recipe of the day
   getRandomRecipe() {
@@ -135,15 +160,20 @@ class App extends React.Component {
   // sends a POST request to serve at endpoint '/toBeSaved'
   // eslint-disable-next-line class-methods-use-this
   saveRecipe(recipe) {
+    this.setState({ open: true, message: 'Saving...' });
     const { userId } = this.state;
     return axios.post('/toBeSaved', {
       userId,
       recipeId: recipe.recipeId,
     })
       .then((result) => {
-        // console.log(result);
+        this.setState({ message: 'Saved to your recipes!' });
+        setTimeout(() => this.setState({ open: false }), 1000);
+        console.log(result);
       }).catch((err) => {
-        // console.log(err, 'error while trying to save recipe into DB');
+        this.setState({ message: 'You\'ve already saved that recipe!' });
+        setTimeout(() => this.setState({ open: false }), 1000);
+        console.log(err, 'error while trying to save recipe into DB');
       });
   }
 
@@ -151,6 +181,7 @@ class App extends React.Component {
   // eslint-disable-next-line class-methods-use-this
   saveDislikeRecipe(recipe) {
     const { userId } = this.state;
+    this.setState({ open: true, message: 'You won\'t be seeing that recipe any more!' });
     return axios.post('/toBeSavedDislike', {
       userId,
       recipeId: recipe.recipeId,
@@ -169,10 +200,21 @@ class App extends React.Component {
     });
   }
 
+  // function to save original recipes
+  addOriginal(name, ingredients, instructions, cooktime) {
+    return axios.post('/originalRecipes', {
+      name, ingredients, instructions, cooktime,
+    })
+      .then((result) => {
+        console.log(result);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
+
 
   signUp(user, pw) {
-    // console.log(`thank you for signing up, ${user}`);
-    // console.log(`Hello, ${user}`);
+    this.setState({ buttonClicked: true });
     axios.post('/api/users', {
       user: {
         username: user,
@@ -180,24 +222,31 @@ class App extends React.Component {
       },
     })
       .then((res) => {
-        // console.log('made to signup');
-        // console.log(res.data.user, res.data.user.id, 'RESPONSE');
-        // console.log('where is res');
+        window.previous = 'signup';
+        console.log('made to signup');
+        console.log(res.data.user, res.data.user.id, 'RESPONSE');
+        console.log('where is res');
         this.setState({
           authorized: true,
           userId: res.data.user.id,
           userName: res.data.user.username,
         });
+        setTimeout(() => this.setState({ buttonClicked: false }), 500);
         this.componentDidMount();
       })
-      .catch((bool) => {
-        // console.log(bool, 'could not log in after signup');
+      .catch((err) => {
+        setTimeout(() => this.setState({ buttonClicked: false }), 500);
+        this.setState({
+          whichFailed: 'signup',
+        });
+        console.error(err, 'could not log in after signup');
       });
   }
 
   login(user, pw) {
-    // console.log('logged in');
-    // console.log(`Hello, ${user}`);
+    this.setState({ buttonClicked: true });
+    console.log('logged in');
+    console.log(`Hello, ${user}`);
     axios.post('/api/users/login', {
       user: {
         username: user,
@@ -205,27 +254,75 @@ class App extends React.Component {
       },
     })
       .then((res) => {
-        // console.log(res, 'LOGGING IN');
+        window.previous = 'login';
+        console.log(res, 'LOGGING IN');
         this.setState({
           authorized: true,
           userId: res.data.user.id,
           userName: res.data.user.username,
         });
+        setTimeout(() => this.setState({ buttonClicked: false }), 500);
         this.componentDidMount();
       })
       .catch(() => {
-        // console.log('could not log in');
+        setTimeout(() => this.setState({ buttonClicked: false }), 500);
+        this.setState({
+          whichFailed: 'login',
+        });
+        console.log('could not log in');
       });
   }
 
+
+  autoIngredient(term, cb) {
+    axios.get('/autoIngredient', {
+      params: term,
+    })
+      .then((res) => {
+        console.log(res);
+        cb(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  logout() {
+    this.setState({
+      authorized: false,
+      userId: null,
+      userName: null,
+      show: 'login',
+    });
+  }
+
+  saveAllergy(user, allergies) {
+    console.log('hi');
+    axios.post('/allergies', {
+      user: {
+        user,
+        allergies,
+      },
+    });
+  }
+
   render() {
-    const { show } = this.state;
+    const { show, wantedIngredients, unwantedIngredients } = this.state;
     let mainComponent = 'login';
     const {
-      recipeOfTheDay, selectedRecipe, savedRecipes, recipes, ingredients, userName, wantedIngredients, unwantedIngredients,
+      recipeOfTheDay, selectedRecipe, savedRecipes, recipes, ingredients, userName,
+      buttonClicked, whichFailed, searchInProgress, open, message,
     } = this.state;
     if (show === 'login') {
-      mainComponent = <Login recipe={recipeOfTheDay} signUp={this.signUp} login={this.login} />;
+      mainComponent = (
+        <Login
+          recipe={recipeOfTheDay}
+          signUp={this.signUp}
+          login={this.login}
+          buttonClicked={buttonClicked}
+          whichFailed={whichFailed}
+        />
+      );
     } else if (show === 'home') {
       mainComponent = (
         <Main
@@ -242,13 +339,22 @@ class App extends React.Component {
           getSavedRecipes={this.getSavedRecipes}
           selectRecipe={this.selectRecipe}
           user={userName}
-          getRestrictions={this.getRestrictions}
+          // getRestrictions={this.getRestrictions}
+          searchInProgress={searchInProgress}
+          logout={this.logout}
+          addOriginal={this.addOriginal}
+          saveAllergy={this.saveAllergy}
+          autoIngredient={this.autoIngredient}
         />
       );
     }
     return (
       <div>
         {mainComponent}
+        <Snackbar
+          open={open}
+          message={message}
+        />
       </div>
     );
   }

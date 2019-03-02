@@ -27,7 +27,12 @@ app.use(express.static(path.join(__dirname, '/../client/dist')));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'passport-tutorial', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+app.use(session({
+  secret: 'passport-tutorial',
+  cookie: { maxAge: 60000 },
+  resave: false,
+  saveUninitialized: false,
+}));
 app.use(require('../routes'));
 
 if (!isProduction) {
@@ -37,13 +42,20 @@ if (!isProduction) {
 // get recipies depending upon passed in ingredients //
 // req.query.unwantedIngredientList - for kaelyn, later
 app.get('/food', (req, res) => {
-  helper.recFoodNutrApi(req.query.ingredients, (err, recipes) => {
-    if (err) {
-      // console.log(err);
-      return res.status(500).send('Something went wrong!');
-    }
-    // console.log(recipes, 'server line 45!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    res.send(recipes);
+
+  helper.recFoodNutrApi(req.query.ingredients)
+    .then((recipes) => {
+      if (req.query.unwantedIngredientList) {
+        helper.findRecipeIdOfUnwantedIngredients(req.query.unwantedIngredientList)
+          .then((unwanted) => {
+            const response = { recipes: recipes, unwanted: unwanted };
+            res.send(response);
+          });
+      }
+    });
+});
+
+
     /*
     // respond with an array of objects which contain recipe information
     // console.log(recipes);
@@ -91,20 +103,22 @@ app.get('/food', (req, res) => {
     }
     return res.status(200).send(recipes);
     */
-  });
-});
+// });
+// });
 
-app.get('/unwantedIngredients', (req, res) => {
-  // helper function
-  // console.log(req.query.unwantedIngredientList);
-  helper.findRecipeIdOfUnwantedIngredients(req.query.unwantedIngredientList, (err, unwantedRecipeId) => {
-    if (err) {
-      return err;
-    }
-    // console.log(unwantedRecipeId, 'server, line 103!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    res.send(unwantedRecipeId);
-  });
-});
+// app.get('/unwantedIngredients', (req, res) => {
+//   // helper function
+//   // console.log(req.query.unwantedIngredientList);
+//   if (req.query.unwantedIngredientList) {
+//     helper.findRecipeIdOfUnwantedIngredients(req.query.unwantedIngredientList, (err, unwantedRecipeId) => {
+//       if (err) {
+//         return err;
+//       }
+//       // console.log(unwantedRecipeId, 'server, line 103!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+//       res.send(unwantedRecipeId);
+//     });
+//   }
+// });
 
 
 // get all ingredients stored in the MealDB //
@@ -126,6 +140,15 @@ app.get('/ingredients', (req, res) => {
     });
     // send back ingredients regardless of whether or not they were new
     res.send(ingredients);
+  });
+});
+
+// GET for ingredient autocomplete list
+app.get('/autoIngredient', (req, res) => {
+  console.log(req.query);
+  const list = helper.autoComplete(req.query[0]);
+  list.then((ingList) => {
+    res.status(200).send(ingList.data.common);
   });
 });
 
@@ -373,6 +396,22 @@ app.post('/toBeSavedDislike', (req, res) => {
     }
     return res.status(500).send('Recipe Already Saved');
   });
+});
+
+app.post('/originalRecipes', (req, res) => {
+  db.addOriginalRecipe(req.body.name, req.body.ingredients, req.body.instructions, req.body.cooktime, (err, results) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(200);
+    }
+  });
+});
+
+app.post('/allergies', (req, res) => {
+  console.log(req);
+  const { body: { user: { user, allergies } } } = req;
+  db.saveAllergies(allergies, user)
 });
 
 // Able to set port and still work //

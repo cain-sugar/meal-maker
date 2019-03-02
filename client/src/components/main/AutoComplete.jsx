@@ -13,8 +13,6 @@ class AutoComplete extends React.Component {
       dislikeText: '',
       selectedIngredients: {},
       color: 'primary',
-      // dislikedIngredients: [],
-      // textBoxForDislikedIngredients: false,
     };
     this.onTextChange = this.onTextChange.bind(this);
     this.onTextChange2 = this.onTextChange2.bind(this);
@@ -24,26 +22,48 @@ class AutoComplete extends React.Component {
     // this.disingredientsNotToAdd = this.ingredientsNotToAdd.bind(this);
   }
 
+  // onTextChange(e) {
+  //   const { ingredients } = this.props;
+  //   const { value } = e.target;
+  //   let suggestions = [];
+  //   if (value.length > 0) {
+  //     const regex = new RegExp(`^${value}`, 'i');
+  //     suggestions = ingredients.sort().filter(v => regex.test(v));
+  //   }
+  //   this.setState({ suggestions, text: value });
+  // }
+
   onTextChange(e) {
-    const { ingredients } = this.props;
+    const { text, suggestions } = this.state;
+    const { autoIngredient } = this.props;
     const { value } = e.target;
-    let suggestions = [];
-    if (value.length > 0) {
-      const regex = new RegExp(`^${value}`, 'i');
-      suggestions = ingredients.sort().filter(v => regex.test(v));
-    }
-    this.setState({ suggestions, text: value, color: 'primary' });
+    this.setState({ text: value });
+    autoIngredient(text, (ingredients) => {
+      const sugg = ingredients.map(i => i.food_name);
+      this.setState({
+        suggestions: sugg,
+        text: value,
+        color: 'primary',
+      });
+    });
   }
 
   onTextChange2(e) {
-    const { ingredients } = this.props;
+    console.log(e);
+    const { text, suggestions } = this.state;
+    const { autoIngredient } = this.props;
     const { value } = e.target;
-    let suggestions = [];
-    if (value.length > 0) {
-      const regex = new RegExp(`^${value}`, 'i');
-      suggestions = ingredients.sort().filter(v => regex.test(v));
-    }
-    this.setState({ suggestions, dislikeText: value, color: 'secondary' });
+    this.setState({ text: value });
+    autoIngredient(text, (ingredients) => {
+      const sugg = ingredients.map(i => i.food_name);
+      console.log(sugg);
+      console.log(suggestions);
+      this.setState({
+        suggestions: sugg,
+        dislikeText: value,
+        color: 'secondary',
+      });
+    });
   }
 
 
@@ -53,6 +73,7 @@ class AutoComplete extends React.Component {
     selectedIngredients[ingredient] = color;
     if (color === 'primary') {
       wantedIngredients.push(ingredient);
+      unwantedIngredients.push(ingredient); ////////////// MAY NEED TO REMOVE
     } else {
       unwantedIngredients.push(ingredient);
     }
@@ -72,15 +93,15 @@ class AutoComplete extends React.Component {
 
   handleDelete(label) {
     const { selectedIngredients } = this.state;
-    const deconstructedIngredientList = { selectedIngredients };
+    const deconstructedIngredientList = Object(selectedIngredients);
     delete deconstructedIngredientList[label];
     this.setState({ selectedIngredients: deconstructedIngredientList });
   }
 
   sendWantedAndUnwantedIngredientsToParentNode(wanted, unwanted) {
     const { getRecipes, getRestrictions } = this.props;
-    getRecipes(wanted.join(', '));
-    getRestrictions(unwanted.join(', '));
+    getRecipes(wanted.join(', '), unwanted.join(', '));
+    // getRestrictions(unwanted.join(', '));
   }
 
   renderSuggestions() {
@@ -107,8 +128,8 @@ class AutoComplete extends React.Component {
   render() {
     const { dislikeText, text, selectedIngredients } = this.state;
     const { getRecipes, unwantedIngredients, wantedIngredients } = this.props;
-    window.wantedIngred = wantedIngredients;
-    window.unwantedIngred = unwantedIngredients;
+    // window.wantedIngred = wantedIngredients;
+    // window.unwantedIngred = unwantedIngredients;
     return (
       <div className="AutoCompleteComponent">
         <div className="auto-complete">

@@ -1,11 +1,12 @@
 // component with an input form, a + button and a submit button
 
 import React, { Component, Fragment } from 'react';
-import ChatBot from 'react-simple-chatbot';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import VideoPlayer from '../VideoPlayer.jsx';
 import RecipeInstructions from '../login/RecipeInstructions.jsx';
 import RecipeList from './RecipeList.jsx';
 import AutoComplete from './AutoComplete.jsx';
+import GreetBot from './GreetBot.jsx';
 
 
 // eslint-disable-next-line react/prefer-stateless-function
@@ -18,7 +19,9 @@ class Search extends React.Component {
 
   render() {
     const {
-      recipeOfTheDay, recipes, getRecipes, ingredients, saveRecipe, saveDislikeRecipe, selectRecipe, changeView, user, unwantedIngredients, wantedIngredients, getRestrictions,
+      recipeOfTheDay, recipes, getRecipes, ingredients, saveRecipe, saveDislikeRecipe, selectRecipe,
+      changeView, user, searchInProgress, autoIngredient, saveAllergy, unwantedIngredients, wantedIngredients,
+      getRestrictions,
     } = this.props;
     return (
       <div>
@@ -26,22 +29,29 @@ class Search extends React.Component {
           Welcome,
           {user}
         </h2>
-        <ChatBot
-          steps={[
-            {
-              id: 'hello-world',
-              message: `Hi ${user}, nice to meet you!`,
-              end: true,
-            },
-          ]}
-        />
+        <GreetBot user={user} saveAllergy={saveAllergy} />
         <h2 align="center">Search for a recipe</h2>
         <div className="Search-Comp">
-          <AutoComplete ingredients={ingredients} addIngredient={this.addIngredient} getRecipes={getRecipes} unwantedIngredients={unwantedIngredients} wantedIngredients={wantedIngredients} getRestrictions={getRestrictions} />
+          {searchInProgress ? <LinearProgress /> : ''}
+          <AutoComplete
+            ingredients={ingredients}
+            addIngredient={this.addIngredient}
+            getRecipes={getRecipes}
+            autoIngredient={autoIngredient}
+          unwantedIngredients={unwantedIngredients} 
+          wantedIngredients={wantedIngredients} 
+          getRestrictions={getRestrictions}
+          />
         </div>
 
         <div className="test">
-          <RecipeList recipes={recipes} saveRecipe={saveRecipe} saveDislikeRecipe={saveDislikeRecipe} selectRecipe={selectRecipe} changeView={changeView} />
+          <RecipeList
+            recipes={recipes}
+            saveRecipe={saveRecipe}
+            saveDislikeRecipe={saveDislikeRecipe}
+            selectRecipe={selectRecipe}
+            changeView={changeView}
+          />
         </div>
 
         <h3 id="recipeTitle">Recipe of the day</h3>
