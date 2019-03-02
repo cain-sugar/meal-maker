@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ChatBot from '../../../react-simple-chatbot';
+import Credentials from '../login/Credentials.jsx';
 
-class GreetForm extends Component {
+class GreetForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -9,15 +10,11 @@ class GreetForm extends Component {
       favFood: '',
       opened: true,
     };
+  }
 
-    this.toggleFloating = ({ opened }) => {
-      if (!speechSynthesis.paused) {
-        speechSynthesis.pause();
-      } else {
-        speechSynthesis.resume();
-      }
-      this.setState({ opened });
-    };
+
+  toggleFloating({ opened }) {
+    this.setState({ opened });
   }
 
 
@@ -129,7 +126,6 @@ class GreetForm extends Component {
           floating
           opened={opened}
           toggleFloating={this.toggleFloating}
-          handleEnd={this.toggleFloating}
         />
       );
     } if (window.previous === 'login') {
@@ -156,6 +152,38 @@ class GreetForm extends Component {
             {
               id: 'wait',
               message: "I'll be right over here if you need anything.",
+              end: true,
+            },
+          ]}
+          floating
+          opened={opened}
+          toggleFloating={this.toggleFloating}
+        />
+      );
+    } if (window.previous === 'guest') {
+      window.previous = '/';
+      return (
+        <ChatBot
+          headerTitle="C.A.I.N."
+          speechSynthesis={{ enable: true, lang: 'en', voice: voices[4] }}
+          recognitionEnable
+          steps={[
+            {
+              id: '1',
+              message: `Hello ${user}!, I am 'CAIN'. 
+              The "Client, Appitite, Indulgence, Network".`,
+              trigger: '3',
+            },
+            {
+              id: '3',
+              message: 'To get started, begin typing the ingredients you have on hand, or want to avoid, in the search field. After you are satisfied with your ingredients, just click the "Search for a recipe" button and you will be presented with a custom recipe list, tailored to your specifications',
+              trigger: 'wait',
+            },
+            {
+              id: 'wait',
+              component: (
+                <Credentials />
+              ),
               end: true,
             },
           ]}
