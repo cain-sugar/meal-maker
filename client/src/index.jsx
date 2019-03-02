@@ -201,9 +201,9 @@ class App extends React.Component {
   }
 
   // function to save original recipes
-  addOriginal(name, ingredients, instructions, cooktime) {
+  addOriginal(name, ingredients, instructions, cooktime, username, userId) {
     return axios.post('/originalRecipes', {
-      name, ingredients, instructions, cooktime,
+      name, ingredients, instructions, cooktime, username,
     })
       .then((result) => {
         console.log(result);

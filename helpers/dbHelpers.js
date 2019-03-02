@@ -270,18 +270,43 @@ const saveAllergies = (allergies, username) => {
   });
 };
 
-const addOriginalRecipe = (recipeName, ingredients, instructions, cookTime) => {
-  const q = [recipeName, ingredients, instructions, cookTime];
-  connection.query('INSERT INTO originalRecipes (recipe_name, ingredients, instructions, cookTime) VALUES (?, ?, ?, ?)', q, (err, results) => {
+const addOriginalRecipe = (recipeName, ingredients, instructions, cookTime, userId, username) => {
+  // console.log(recipeName, username, userId, 'username');
+  connection.query('SELECT id FROM Users WHERE username=?', username, (err, data) => {
+    const q = [recipeName, ingredients, instructions, cookTime, data[0].id];
+    connection.query('INSERT INTO originalRecipes (recipe_name, ingredients, instructions, cookTime, userId) VALUES (?, ?, ?, ?, ?)', q, (err, results) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(results, 'Successfully added an original recipe');
+      }
+    });
+  });
+
+//   connection.query('SELECT id FROM Users WHERE username=?', username, (err, data) => {
+//     connection.query('INSERT INTO userOriginalRecipes (userId, id_original) VALUES (?, LAST_INSERT_ID())', [data[0].id], (err, results) => {
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         console.log(results, 'Added to userOriginalRecipes');
+//       }
+//     });
+//   });
+};
+
+const showOriginalRecipes = (userId, callback) => {
+  connection.query(`SELECT * FROM originalRecipes WHERE userId = ${userId}`, (err, recipes) => {
     if (err) {
-      console.log('There was an error');
+      callback(err, null);
     } else {
-      console.log(results, 'Successfully added an original recipe');
+      callback(null, recipes);
     }
   });
 };
 
+
 module.exports = {
+  showOriginalRecipes,
   addOriginalRecipe,
   selectSingleRecipeById,
   toAuthJSON,

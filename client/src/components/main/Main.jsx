@@ -122,7 +122,8 @@ class Main extends React.Component {
                     <Button
                       type="button"
                       variant="contained" color="primary" value="Submit Recipe" onClick={() => {
-                        addOriginal(this.name.value, this.ingredients.value, this.instructions.value, this.cooktime.value);
+                        addOriginal(this.name.value, this.ingredients.value, this.instructions.value, this.cooktime.value, user);
+                        console.log(user);
                         close();
                       }}
                     >

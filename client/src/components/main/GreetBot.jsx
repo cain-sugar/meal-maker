@@ -35,7 +35,7 @@ class GreetForm extends React.Component {
           steps={[
             {
               id: '1',
-              message: `Hello ${user}, I am 'CAIN'. The "Client. Appitite. Indulgence. Network".`,
+              message: `Hello ${user}, I am 'CAIN', (Client. Appetite. Indulgence. Network).`,
               trigger: '3',
             },
             {

@@ -42,13 +42,12 @@ if (!isProduction) {
 // get recipies depending upon passed in ingredients //
 // req.query.unwantedIngredientList - for kaelyn, later
 app.get('/food', (req, res) => {
-
   helper.recFoodNutrApi(req.query.ingredients)
     .then((recipes) => {
       if (req.query.unwantedIngredientList) {
         helper.findRecipeIdOfUnwantedIngredients(req.query.unwantedIngredientList)
           .then((unwanted) => {
-            const response = { recipes: recipes, unwanted: unwanted };
+            const response = { recipes, unwanted };
             res.send(response);
           });
       }
@@ -56,7 +55,7 @@ app.get('/food', (req, res) => {
 });
 
 
-    /*
+/*
     // respond with an array of objects which contain recipe information
     // console.log(recipes);
     db.selectAllRecipes((error, savedRecipes) => {
@@ -183,9 +182,7 @@ app.post('/random', (req, res) => {
         return res.status(500).send('Something Went Wrong!');
       }
       // See if recipe has already been a recipe of the day //
-      const duplicateCount = _.filter(pastRecipeOfTheDays, (recipe) => {
-        return recipe.name === randomRecipe.name;
-      }).length;
+      const duplicateCount = _.filter(pastRecipeOfTheDays, (recipe) => recipe.name === randomRecipe.name).length;
       if (duplicateCount === 0) {
         // Get all recipes currently inside of our database //
         return db.selectAllRecipes((err, currentRecipes) => {
@@ -193,9 +190,7 @@ app.post('/random', (req, res) => {
             return res.status(500).send('Something Went Wrong!');
           }
           // See if we have an old recipe that is the same as the random recipe
-          const oldRecipe = _.filter(currentRecipes, (recipe) => {
-            return recipe.recipe === randomRecipe.name;
-          })[0];
+          const oldRecipe = _.filter(currentRecipes, (recipe) => recipe.recipe === randomRecipe.name)[0];
           // Save the random recipe if we don't have it already //
           if (!oldRecipe) {
             // Save the recipe
@@ -229,22 +224,22 @@ app.post('/random', (req, res) => {
 
 // get the current recipe of the day and update if necessary
 app.get('/recipeoftheday', (req, res) => {
-  //db.selectAllRecipeOfTheDay((err, oldRecipeOfTheDays) => {
-    // if (oldRecipeOfTheDays[oldRecipeOfTheDays.length - 1].date !== new Date().getDate()) {
-    //   axios.post('/random').then((res) => {
-    //     res.status(204).send(res.data);
-    //   });
-    // } else {
-      // const recipeOfTheDay = oldRecipeOfTheDays[oldRecipeOfTheDays.length - 1];
-      // db.getRecipeIngredients(recipeOfTheDay.idRecipe, (error, ingredients) => {
-      //   if (error) {
-      //     res.status(500).send('Something went wrong!');
-      //   }
-      //   ingredients = _.map(ingredients, ingredient => ingredient.ingredients);
-      //   recipeOfTheDay.ingredients = ingredients.join('\n');
-      //   res.status(200).send(recipeOfTheDay);
-      // });
-    // }
+  // db.selectAllRecipeOfTheDay((err, oldRecipeOfTheDays) => {
+  // if (oldRecipeOfTheDays[oldRecipeOfTheDays.length - 1].date !== new Date().getDate()) {
+  //   axios.post('/random').then((res) => {
+  //     res.status(204).send(res.data);
+  //   });
+  // } else {
+  // const recipeOfTheDay = oldRecipeOfTheDays[oldRecipeOfTheDays.length - 1];
+  // db.getRecipeIngredients(recipeOfTheDay.idRecipe, (error, ingredients) => {
+  //   if (error) {
+  //     res.status(500).send('Something went wrong!');
+  //   }
+  //   ingredients = _.map(ingredients, ingredient => ingredient.ingredients);
+  //   recipeOfTheDay.ingredients = ingredients.join('\n');
+  //   res.status(200).send(recipeOfTheDay);
+  // });
+  // }
   // });
 });
 
@@ -335,8 +330,7 @@ app.get('/savedrecipes', (req, res) => {
   db.selectLikedRecipes(userId, (err, results) => {
     if (err) {
       res.status(500).send('Something went wrong!');
-    }
-    else {
+    } else {
       // console.log('next step');
       // get the recipeIds from the DB
       const recipeIds = results.map(result => result.idRecipes);
@@ -358,6 +352,40 @@ app.get('/savedrecipes', (req, res) => {
       }));
     }
   });
+});
+// db.selectLikedRecipes(userId, (err, results) => {
+//   if (err) {
+//     res.status(500).send('Something went wrong!');
+//   }
+//   else {
+//     console.log('next step');
+//     // get the recipeIds from the DB
+//     const recipeIds = results.map(result => result.idRecipes);
+
+//     const recipesObj = [];
+//     // get an array of objects named recipeInfo from rfn and youtube for each id
+//     const recipesInfo = recipeIds.forEach((id, index) => helper.rfnSingleRecipe(id, (err, result) => {
+//       if (err) {
+//         console.log(err, 'error in getting recipe saved');
+//         return;
+//       }
+//       console.log(`${result}, from saved db`);
+//       recipesObj.push(result);
+
+//       if (index === recipeIds.length - 1) {
+//         res.status(200).send(recipesObj); // send that array back to client
+//       }
+//       console.log(recipesObj);
+//     }));
+//   }
+// });
+db.showOriginalRecipes(userId, (err, results) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log(results);
+    res.status(200).send(results);
+  }
 });
 
 // when client wants to save a recipe into DB
@@ -399,7 +427,7 @@ app.post('/toBeSavedDislike', (req, res) => {
 });
 
 app.post('/originalRecipes', (req, res) => {
-  db.addOriginalRecipe(req.body.name, req.body.ingredients, req.body.instructions, req.body.cooktime, (err, results) => {
+  db.addOriginalRecipe(req.body.name, req.body.ingredients, req.body.instructions, req.body.cooktime, req.body.userId, req.body.username, (err, results) => {
     if (err) {
       console.log(err);
     } else {
@@ -411,7 +439,7 @@ app.post('/originalRecipes', (req, res) => {
 app.post('/allergies', (req, res) => {
   console.log(req);
   const { body: { user: { user, allergies } } } = req;
-  db.saveAllergies(allergies, user)
+  db.saveAllergies(allergies, user);
 });
 
 // Able to set port and still work //
