@@ -39,7 +39,7 @@ class Main extends React.Component {
     const {
       selectedRecipe, selectRecipe, recipeOfTheDay, recipes, savedRecipes,
       ingredients, getRecipes, saveRecipe, saveDislikeRecipe, getSavedRecipes, user,
-      searchInProgress, logout, path, autoIngredient,
+      searchInProgress, logout, path, autoIngredient, addOriginal, saveAllergy,
     } = this.props;
     const { view } = this.state;
     return (
@@ -162,6 +162,7 @@ class Main extends React.Component {
                 searchInProgress={searchInProgress}
                 selectRecipe={selectRecipe}
                 autoIngredient={autoIngredient}
+                saveAllergy={saveAllergy}
               />
             )
             : view === 'saved' ? <SavedRecipes savedRecipes={savedRecipes} changeView={this.changeView} selectRecipe={selectRecipe} />
