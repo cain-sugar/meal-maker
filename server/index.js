@@ -364,7 +364,7 @@ app.post('/toBeSavedDislike', (req, res) => {
 });
 
 app.post('/originalRecipes', (req, res) => {
-  db.addOriginalRecipe(req.body.name, req.body.ingredients, req.body.instructions, req.body.cooktime, (err, results) => {
+  db.addOriginalRecipe(req.body.name, req.body.ingredients, req.body.instructions, req.body.cooktime, req.body.username, (err, results) => {
     if (err) {
       console.log(err);
     } else {
