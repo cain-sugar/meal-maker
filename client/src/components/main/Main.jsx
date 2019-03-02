@@ -40,7 +40,7 @@ class Main extends React.Component {
       selectedRecipe, selectRecipe, recipeOfTheDay, recipes, savedRecipes,
       ingredients, getRecipes, saveRecipe, saveDislikeRecipe, getSavedRecipes, user,
       searchInProgress, logout, path, autoIngredient, addOriginal, saveAllergy, wantedIngredients,
-      unwantedIngredients, getRestrictions
+      unwantedIngredients, getRestrictions,
     } = this.props;
     const { view } = this.state;
     return (
