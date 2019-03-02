@@ -281,7 +281,19 @@ const addOriginalRecipe = (recipeName, ingredients, instructions, cookTime) => {
   });
 };
 
+const showOriginalRecipes = (userId, callback) => {
+  connection.query(`SELECT * FROM OriginalRecipes WHERE idUsers = ${userId}`, (err, recipes) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      callback(null, recipes);
+    }
+  });
+};
+
+
 module.exports = {
+  showOriginalRecipes,
   addOriginalRecipe,
   selectSingleRecipeById,
   toAuthJSON,
