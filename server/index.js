@@ -27,7 +27,12 @@ app.use(express.static(path.join(__dirname, '/../client/dist')));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'passport-tutorial', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+app.use(session({
+  secret: 'passport-tutorial',
+  cookie: { maxAge: 60000 },
+  resave: false,
+  saveUninitialized: false,
+}));
 app.use(require('../routes'));
 
 if (!isProduction) {
@@ -42,7 +47,6 @@ app.get('/food', (req, res) => {
       return res.status(500).send('Something went wrong!');
     }
     // respond with an array of objects which contain recipe information
-    console.log(recipes);
     db.selectAllRecipes((error, savedRecipes) => {
       if (err) {
         return console.log(error);
@@ -228,7 +232,7 @@ app.post('/signup', (req, res) => {
         if (err) {
           console.log(err, 'HEY not Saved');
         } else {
-          console.log(result, 'Saved user')
+          console.log(result, 'Saved user');
         }
       });
       return res.status(204).redirect('/home');
@@ -358,6 +362,12 @@ app.post('/originalRecipes', (req, res) => {
       res.send(200);
     }
   });
+});
+
+app.post('/allergies', (req, res) => {
+  console.log(req);
+  const { body: { user: { user, allergies } } } = req;
+  db.saveAllergies(allergies, user)
 });
 
 // Able to set port and still work //

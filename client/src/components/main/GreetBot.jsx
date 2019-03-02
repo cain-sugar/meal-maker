@@ -19,15 +19,18 @@ class GreetForm extends Component {
 
   render() {
     const { allergies, favFood, opened } = this.state;
-    const { user } = this.props;
+    const { user, saveAllergy } = this.props;
     const voices = speechSynthesis.getVoices();
-    const setVoice = () => speechSynthesis.voice = voices[4];
+    let voice = voices[4];
+    if (voices.length > 40) {
+      voice = voices[49];
+    }
     if (window.previous === 'signup') {
       window.previous = '/';
       return (
         <ChatBot
           headerTitle="C.A.I.N."
-          speechSynthesis={{ enable: true, lang: 'en', voice: voices[4] }}
+          speechSynthesis={{ enable: true, lang: 'en', voice }}
           steps={[
             {
               id: '1',
@@ -45,7 +48,7 @@ class GreetForm extends Component {
               validator: (value) => {
                 if (value) {
                   const allergy = value.split(',');
-                  this.setState({ allergies: allergy });
+                  saveAllergy(user, allergy);
                   return true;
                 }
                 return true;
