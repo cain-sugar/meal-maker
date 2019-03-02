@@ -11,7 +11,8 @@ const _ = require('lodash');
 // const keys = require('./keys');
 // make .env files locally to assign api keys (see .env.example)
 
-
+let a;
+let b;
 // search for videos based on the query
 
 const youTubeApi = (query, callback) => axios({
@@ -47,7 +48,8 @@ const findRecipeIdOfUnwantedIngredients = (unwantedIngredients, callback) => {
       recipeId.push(recipe.id);
     });
     callback(null, recipeId);
-    // console.log(recipeId, 'apiHelper!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    a = recipeId;
+    // console.log(acceptedRecipies, 'apiHelper!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   }).catch(() => {
     console.log(505);
   });
@@ -72,7 +74,7 @@ const recFoodNutrApi = async (ingredients, callback) => {
     const acceptedRecipies = [];
     _.forEach(result.data.results, (recipe) => {
       // object to store recipe info
-      console.log(recipe.id, '?????????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!????????????????');
+      // console.log(recipe.id, '?????????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!????????????????');
       acceptedRecipies.push(recipe.id);
       //   const recipeInfo = {};
       //   recipeInfo.name = recipe.title;
@@ -106,8 +108,10 @@ const recFoodNutrApi = async (ingredients, callback) => {
       //   });
       // });
     });
-    console.log(acceptedRecipies, '!!!!!!!!!!!!@2222222222222222!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    // console.log(acceptedRecipies, '!!!!!!!!!!!!@2222222222222222!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     callback(null, acceptedRecipies);
+    console.log(a);
+    return findRecipeIdOfUnwantedIngredients();
   }).catch(err => callback(err, null));
 };
 

@@ -63,7 +63,7 @@ class App extends React.Component {
       .then((results) => {
         console.log(results);
         this.setState({ // change the state
-          recipes: results.data, // by making the data received back fron the server available
+          recipes: results.data.slice(0, 10), // by making the data received back fron the server available
         });
       }).catch((err) => {
         // console.log(err, 'error while retrieving data from server');
@@ -92,9 +92,9 @@ class App extends React.Component {
   getRandomRecipe() {
     return axios.get('/recipeoftheday') // sends get request to server for random recipe
       .then((recipe) => {
-        this.setState({
-          recipeOfTheDay: recipe.data,
-        });
+        // this.setState({
+        //   recipeOfTheDay: recipe.data,
+        // });
       })
       .catch((err) => {
         // console.log(`there was an error retriving random recipe : ${err}`);
