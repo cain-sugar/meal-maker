@@ -14,7 +14,7 @@ class Credentials extends React.Component {
 
   render() {
     const {
-      signUp, login, buttonClicked, whichFailed,
+      signUp, login, buttonClicked, whichFailed, guestLogin,
     } = this.props;
 
     return (
@@ -51,6 +51,17 @@ class Credentials extends React.Component {
           }}
         >
         Sign Up
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          value="guestLogin"
+          onClick={() => {
+            guestLogin();
+          }}
+        >
+        Log in as guest
         </Button>
       </div>
     );

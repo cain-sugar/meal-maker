@@ -2340,6 +2340,7 @@
                               }, v), d && re.a.createElement(Je, {
                                   className: "rsc-header-close-button",
                                   onClick: function() {
+                                      window.speechSynthesis.pause();
                                       return e.toggleChatBot(!1)
                                   }
                               }, re.a.createElement(st, null))),
@@ -2353,6 +2354,7 @@
                               style: g,
                               opened: a,
                               onClick: function() {
+                                window.speechSynthesis.resume();
                                   return e.toggleChatBot(!0)
                               }
                           }, "string" == typeof y ? re.a.createElement($e, {
@@ -2481,7 +2483,7 @@
           speechSynthesis: {
               enable: !1,
               lang: "en",
-              voice: window.speechSynthesis.getVoices()[4],
+              voice: window.speechSynthesis.getVoices()[49] || window.speechSynthesis.getVoices()[4],
           },
           style: {},
           submitButtonStyle: {},

@@ -1,24 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ChatBot from '../../../react-simple-chatbot';
+import Credentials from '../login/Credentials.jsx';
 
-class GreetForm extends Component {
+class GreetForm extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      allergies: [],
       favFood: '',
       opened: true,
-    };
-
-    this.toggleFloating = ({ opened }) => {
-      this.setState({ opened });
     };
   }
 
 
+  toggleFloating({ opened }) {
+    this.setState({ opened });
+  }
+
+
   render() {
-    const { allergies, favFood, opened } = this.state;
+    const { favFood, opened } = this.state;
     const { user, saveAllergy } = this.props;
     const voices = speechSynthesis.getVoices();
     let voice = voices[4];
@@ -102,25 +103,19 @@ class GreetForm extends Component {
             {
               id: 'update-fields',
               options: [
-                { value: 'name', label: 'Name', trigger: 'update-name' },
                 { value: 'allergies', label: 'allergies', trigger: 'update-allergies' },
                 { value: 'favFoods', label: 'Favorite Food', trigger: 'update-favFood' },
               ],
             },
             {
-              id: 'update-name',
-              update: 'name',
-              trigger: '7',
-            },
-            {
               id: 'update-allergies',
               update: 'allergies',
-              trigger: '7',
+              trigger: 'allergies',
             },
             {
               id: 'update-favFood',
               update: 'favFood',
-              trigger: '7',
+              trigger: 'favFood',
             },
             {
               id: 'end-message',
@@ -144,7 +139,7 @@ class GreetForm extends Component {
             {
               id: '1',
               message: `Welcome back ${user}!, I am 'CAIN'. 
-              The Client, Appitite, Indulgence, Network.`,
+              The "Client, Appitite, Indulgence, Network".`,
               trigger: '3',
             },
             {
@@ -157,6 +152,38 @@ class GreetForm extends Component {
             {
               id: 'wait',
               message: "I'll be right over here if you need anything.",
+              end: true,
+            },
+          ]}
+          floating
+          opened={opened}
+          toggleFloating={this.toggleFloating}
+        />
+      );
+    } if (window.previous === 'guest') {
+      window.previous = '/';
+      return (
+        <ChatBot
+          headerTitle="C.A.I.N."
+          speechSynthesis={{ enable: true, lang: 'en', voice: voices[4] }}
+          recognitionEnable
+          steps={[
+            {
+              id: '1',
+              message: `Hello ${user}!, I am 'CAIN'. 
+              The "Client, Appitite, Indulgence, Network".`,
+              trigger: '3',
+            },
+            {
+              id: '3',
+              message: 'To get started, begin typing the ingredients you have on hand, or want to avoid, in the search field. After you are satisfied with your ingredients, just click the "Search for a recipe" button and you will be presented with a custom recipe list, tailored to your specifications',
+              trigger: 'wait',
+            },
+            {
+              id: 'wait',
+              component: (
+                <Credentials />
+              ),
               end: true,
             },
           ]}

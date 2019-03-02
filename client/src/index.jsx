@@ -30,7 +30,7 @@ class App extends React.Component {
       message: '',
     };
     // binding all functions to the index component
-    this.getRandomRecipe = this.getRandomRecipe.bind(this);
+    // this.getRandomRecipe = this.getRandomRecipe.bind(this);
     this.getRecipes = this.getRecipes.bind(this);
     this.getSavedRecipes = this.getSavedRecipes.bind(this);
     this.saveRecipe = this.saveRecipe.bind(this);
@@ -40,11 +40,12 @@ class App extends React.Component {
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.autoIngredient = this.autoIngredient.bind(this);
+    this.guestLogin = this.guestLogin.bind(this);
   }
 
   componentDidMount() {
     const { authorized } = this.state;
-    this.getRandomRecipe();
+    // this.getRandomRecipe();
     this.grabIngredients();
     if (authorized) {
       this.setState({
@@ -75,17 +76,17 @@ class App extends React.Component {
   }
 
   // function to retrieve the recipe of the day
-  getRandomRecipe() {
-    return axios.get('/recipeoftheday') // sends get request to server for random recipe
-      .then((recipe) => {
-        this.setState({
-          recipeOfTheDay: recipe.data,
-        });
-      })
-      .catch((err) => {
-        console.log(`there was an error retriving random recipe : ${err}`);
-      });
-  }
+  // getRandomRecipe() {
+  //   return axios.get('/recipeoftheday') // sends get request to server for random recipe
+  //     .then((recipe) => {
+  //       this.setState({
+  //         recipeOfTheDay: recipe.data,
+  //       });
+  //     })
+  //     .catch((err) => {
+  //       console.log(`there was an error retriving random recipe : ${err}`);
+  //     });
+  // }
 
   // function to retrieve all saved recipes for the current user
   getSavedRecipes() {
@@ -204,6 +205,17 @@ class App extends React.Component {
       });
   }
 
+  guestLogin() {
+    this.setState({ buttonClicked: true });
+    window.previous = 'guest';
+    this.setState({
+      authorized: true,
+      userId: null,
+      userName: 'Guest',
+    });
+    setTimeout(() => { this.setState({ buttonClicked: false }); this.componentDidMount(); }, 500);
+  }
+
   login(user, pw) {
     this.setState({ buttonClicked: true });
     console.log('logged in');
@@ -281,6 +293,7 @@ class App extends React.Component {
           login={this.login}
           buttonClicked={buttonClicked}
           whichFailed={whichFailed}
+          guestLogin={this.guestLogin}
         />
       );
     } else if (show === 'home') {
