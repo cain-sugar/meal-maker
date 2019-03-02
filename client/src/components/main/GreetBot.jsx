@@ -6,19 +6,23 @@ class GreetForm extends Component {
     super(props);
 
     this.state = {
-      allergies: [],
       favFood: '',
       opened: true,
     };
 
     this.toggleFloating = ({ opened }) => {
+      if (!speechSynthesis.paused) {
+        speechSynthesis.pause();
+      } else {
+        speechSynthesis.resume();
+      }
       this.setState({ opened });
     };
   }
 
 
   render() {
-    const { allergies, favFood, opened } = this.state;
+    const { favFood, opened } = this.state;
     const { user, saveAllergy } = this.props;
     const voices = speechSynthesis.getVoices();
     let voice = voices[4];
@@ -34,7 +38,7 @@ class GreetForm extends Component {
           steps={[
             {
               id: '1',
-              message: `Hello ${user}, I am 'CAIN', (Client. Appitite. Indulgence. Network).`,
+              message: `Hello ${user}, I am 'CAIN'. The "Client. Appitite. Indulgence. Network".`,
               trigger: '3',
             },
             {
@@ -102,25 +106,19 @@ class GreetForm extends Component {
             {
               id: 'update-fields',
               options: [
-                { value: 'name', label: 'Name', trigger: 'update-name' },
                 { value: 'allergies', label: 'allergies', trigger: 'update-allergies' },
                 { value: 'favFoods', label: 'Favorite Food', trigger: 'update-favFood' },
               ],
             },
             {
-              id: 'update-name',
-              update: 'name',
-              trigger: '7',
-            },
-            {
               id: 'update-allergies',
               update: 'allergies',
-              trigger: '7',
+              trigger: 'allergies',
             },
             {
               id: 'update-favFood',
               update: 'favFood',
-              trigger: '7',
+              trigger: 'favFood',
             },
             {
               id: 'end-message',
@@ -131,6 +129,7 @@ class GreetForm extends Component {
           floating
           opened={opened}
           toggleFloating={this.toggleFloating}
+          handleEnd={this.toggleFloating}
         />
       );
     } if (window.previous === 'login') {
@@ -144,7 +143,7 @@ class GreetForm extends Component {
             {
               id: '1',
               message: `Welcome back ${user}!, I am 'CAIN'. 
-              The Client, Appitite, Indulgence, Network.`,
+              The "Client, Appitite, Indulgence, Network".`,
               trigger: '3',
             },
             {
