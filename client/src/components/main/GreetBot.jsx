@@ -20,7 +20,9 @@ class GreetForm extends React.Component {
 
   render() {
     const { favFood, opened } = this.state;
-    const { user, saveAllergy } = this.props;
+    const {
+      user, saveAllergy, signUp, login, buttonClicked, whichFailed, guestLogin,
+    } = this.props;
     const voices = speechSynthesis.getVoices();
     let voice = voices[4];
     if (voices.length > 40) {
@@ -140,18 +142,91 @@ class GreetForm extends React.Component {
               id: '1',
               message: `Welcome back ${user}!, I am 'CAIN'. 
               The "Client, Appitite, Indulgence, Network".`,
+              trigger: '2',
+            },
+            {
+              id: '2',
+              message: `Let me know if I can be of assistance. 
+              You may type help for a list of commands`,
               trigger: '3',
             },
             {
               id: '3',
-              message: `Let me know if I can be of assistance. 
-              If you have yet to familiarize yourself with me, 
-              you may type help for a list of commands`,
-              trigger: 'wait',
+              message: 'Okay! How can I help?',
+              user: true,
+              trigger: '4',
             },
             {
-              id: 'wait',
-              message: "I'll be right over here if you need anything.",
+              id: '4',
+              options: [
+                { value: 'Switch Account/Create Account', label: 'Switch Account\nor\nCreate Account', trigger: '5' },
+                { value: 'Logout', label: 'Log me out', trigger: '6' },
+                { value: 'Give me a compliment', label: 'Give me a compliment', trigger: '7' },
+                { value: 'Tell me a joke', label: 'Tell me a joke', trigger: '8' },
+              ],
+            },
+            {
+              id: '5',
+              component: (
+                <Credentials
+                signUp={window.signup}
+                login={window.login}
+                guestLogin={window.guest}
+              />
+              ),
+              trigger: '2',
+            },
+            {
+              id: '6',
+              message: 'Please click to confirm logout.',
+              trigger: 'logout',
+            },
+            {
+              id: 'logout',
+              user: true,
+              validator: () => {
+                window.logout();
+              },
+              end: true,
+            },
+            {
+              id: '7',
+              options: [
+                { value: 'yes', label: 'Yes', trigger: 'update-yes' },
+                { value: 'no', label: 'No', trigger: 'end-message' },
+              ],
+            },
+            {
+              id: 'update-yes',
+              message: 'What field would you like to update?',
+              trigger: '8',
+            },
+            {
+              id: '8',
+              options: [
+                { value: 'name', label: 'Name', trigger: 'update-name' },
+                { value: 'allergies', label: 'allergies', trigger: 'update-allergies' },
+                { value: 'favFoods', label: 'Favorite Food', trigger: 'update-favFood' },
+              ],
+            },
+            {
+              id: 'update-name',
+              update: 'name',
+              trigger: '7',
+            },
+            {
+              id: 'update-allergies',
+              update: 'allergies',
+              trigger: '7',
+            },
+            {
+              id: 'update-favFood',
+              update: 'favFood',
+              trigger: '7',
+            },
+            {
+              id: 'end-message',
+              message: 'Thanks! Your data was submitted successfully!',
               end: true,
             },
           ]}
@@ -177,13 +252,84 @@ class GreetForm extends React.Component {
             {
               id: '3',
               message: 'To get started, begin typing the ingredients you have on hand, or want to avoid, in the search field. After you are satisfied with your ingredients, just click the "Search for a recipe" button and you will be presented with a custom recipe list, tailored to your specifications',
-              trigger: 'wait',
+              trigger: '4',
             },
             {
-              id: 'wait',
+              id: '4',
+              options: [
+                { value: 'Switch Account/Create Account', label: 'Switch Account\nor\nCreate Account', trigger: '5' },
+                { value: 'Logout', label: 'Log me out', trigger: '6' },
+                { value: 'Give me a compliment', label: 'Give me a compliment', trigger: '7' },
+                { value: 'Tell me a joke', label: 'Tell me a joke', trigger: '8' },
+              ],
+            },
+            {
+              id: '5',
               component: (
-                <Credentials />
+                <Credentials
+                  signUp={window.signup}
+                  login={window.login}
+                  guestLogin={window.guest}
+                />
               ),
+              trigger: '2',
+            },
+            {
+              id: '6',
+              message: 'Please click to confirm logout.',
+              trigger: 'logout',
+            },
+            {
+              id: 'logout',
+              user: true,
+              validator: () => {
+                window.logout();
+              },
+              end: true,
+            },
+            {
+              id: '7',
+              message: 'Would you like to update any of the previous fields?',
+              trigger: 'update-question',
+            },
+            {
+              id: 'update-question',
+              options: [
+                { value: 'yes', label: 'Yes', trigger: 'update-yes' },
+                { value: 'no', label: 'No', trigger: 'end-message' },
+              ],
+            },
+            {
+              id: 'update-yes',
+              message: 'What field would you like to update?',
+              trigger: '8',
+            },
+            {
+              id: '8',
+              options: [
+                { value: 'name', label: 'Name', trigger: 'update-name' },
+                { value: 'allergies', label: 'allergies', trigger: 'update-allergies' },
+                { value: 'favFoods', label: 'Favorite Food', trigger: 'update-favFood' },
+              ],
+            },
+            {
+              id: 'update-name',
+              update: 'name',
+              trigger: '7',
+            },
+            {
+              id: 'update-allergies',
+              update: 'allergies',
+              trigger: '7',
+            },
+            {
+              id: 'update-favFood',
+              update: 'favFood',
+              trigger: '7',
+            },
+            {
+              id: 'end-message',
+              message: 'Thanks! Your data was submitted successfully!',
               end: true,
             },
           ]}
@@ -200,12 +346,6 @@ class GreetForm extends React.Component {
         recognitionEnable
         steps={[
           {
-            id: '1',
-            message: '',
-            user: true,
-            trigger: '3',
-          },
-          {
             id: '3',
             message: 'How can I help?',
             trigger: '4',
@@ -217,13 +357,22 @@ class GreetForm extends React.Component {
           // },
           {
             id: '4',
-            message: '',
-            user: true,
-            trigger: '5',
+            options: [
+              { value: 'Switch Account/Create Account', label: 'Switch Account\nor\nCreate Account', trigger: '5' },
+              { value: 'Logout', label: 'Log me out', trigger: '6' },
+              { value: 'Give me a compliment', label: 'Give me a compliment', trigger: '7' },
+              { value: 'Tell me a joke', label: 'Tell me a joke', trigger: '8' },
+            ],
           },
           {
             id: '5',
-            message: 'To do, add list of commands',
+            component: (
+              <Credentials
+                signUp={window.signup}
+                login={window.login}
+                guestLogin={window.guest}
+              />
+            ),
             trigger: 'favFood',
           },
           {
@@ -258,10 +407,10 @@ class GreetForm extends React.Component {
           {
             id: 'update-yes',
             message: 'What field would you like to update?',
-            trigger: 'update-fields',
+            trigger: '8',
           },
           {
-            id: 'update-fields',
+            id: '8',
             options: [
               { value: 'name', label: 'Name', trigger: 'update-name' },
               { value: 'allergies', label: 'allergies', trigger: 'update-allergies' },
