@@ -25,7 +25,7 @@ const youTubeApi = query => axios({
 const findRecipeIdOfUnwantedIngredients = unwantedIngredients => axios({
   method: 'get',
   headers: {
-    'X-RapidAPI-Key': '2ec86674c2msh2b69061509e314bp1a1e51jsn9c448f4a87ea',
+    'X-RapidAPI-Key': process.env.RECIPE_FOOD_NUTRITION_API_KEY,
   },
   url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=30&ranking=1&ingredients=${unwantedIngredients}`
   // https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search?excludeIngredients=${unwantedIngredients}&number=500
@@ -41,7 +41,7 @@ const findRecipeIdOfUnwantedIngredients = unwantedIngredients => axios({
 const recFoodNutrApi = ingredients => axios({
   method: 'get',
   headers: {
-    'X-RapidAPI-Key': '2ec86674c2msh2b69061509e314bp1a1e51jsn9c448f4a87ea',
+    'X-RapidAPI-Key': process.env.RECIPE_FOOD_NUTRITION_API_KEY,
   },
   url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=30&ranking=1&ingredients=${ingredients}`,
 }).then((result) => {
@@ -133,7 +133,7 @@ const rfnRandomRecipe = (callback) => {
 const rfnSingleRecipe = recipeId => axios({
   method: 'get',
   headers: {
-    'X-RapidAPI-Key': '2ec86674c2msh2b69061509e314bp1a1e51jsn9c448f4a87ea',
+    'X-RapidAPI-Key': process.env.RECIPE_FOOD_NUTRITION_API_KEY,
   },
   url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/${recipeId}/information`,
 }).then((recipe) => {
@@ -182,8 +182,8 @@ const autoComplete = async (term) => {
      'cache-control': 'no-cache',
      'Content-Type': 'application/json',
      'x-remote-user-id': '0',
-     'x-app-id': '732e2c1b', // process.env.IX_APP_ID,
-     'x-app-key': 'ec0253de172a689b75f2266e3386dfa5', // process.env.NIX_API,
+     'x-app-id': process.env.IX_APP_ID,
+     'x-app-key': process.env.NIX_API,
    },
   });
   return instantList;
