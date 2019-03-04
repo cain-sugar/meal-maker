@@ -215,7 +215,7 @@ class GreetForm extends React.Component {
             {
               id: '1',
               message: `Welcome back ${user}!, I am 'CAIN'. 
-              The "Client, Appitite, Indulgence, Network".`,
+              The "Client, Appetite, Indulgence, Network".`,
               trigger: '2',
             },
             {
@@ -290,7 +290,7 @@ class GreetForm extends React.Component {
             {
               id: '1',
               message: `Hello ${user}!, I am 'CAIN'. 
-              The "Client, Appitite, Indulgence, Network".`,
+              The "Client, Appetite, Indulgence, Network".`,
               trigger: '2',
             },
             {
