@@ -122,11 +122,9 @@ ref={input => this.name = input}/>
                     <br />
                     <Button
                       type="button"
-                      variant="contained"
-color="primary"
-value="Submit Recipe"
-onClick={() => {
-                        addOriginal(this.name.value, this.ingredients.value, this.instructions.value, this.cooktime.value);
+                      variant="contained" color="primary" value="Submit Recipe" onClick={() => {
+                        addOriginal(this.name.value, this.ingredients.value, this.instructions.value, this.cooktime.value, user);
+                        console.log(user);
                         close();
                       }}
                     >
