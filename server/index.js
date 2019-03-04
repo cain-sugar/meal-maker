@@ -453,6 +453,15 @@ app.get('/getRecipeClicked', (req, res) => {
     .catch(() => 'something went wrong in the server line 451');
 });
 
+app.get('/getVideoForQueryRecipe', (req, res) => {
+  const queryTitle = req.query.queryTitle;
+  helper.youTubeApi(queryTitle)
+    .then((result) => {
+      console.log(result);
+      res.send('good');
+    })
+});
+
 // Able to set port and still work //
 const port = 3306;
 

@@ -18,9 +18,9 @@ const Recipe = ({ selectedRecipe, recipeData }) => {
       <table>
         <tbody>
           <tr>
-            <td className="vidPlayer"><VideoPlayer recipe={selectedRecipe} /></td>
+            <td className="vidPlayer"><VideoPlayer recipe={selectedRecipe} recipeData={recipeData} /></td>
             <td className="instructions">
-              <RecipeInstructions recipeData={recipeData} />
+              <RecipeInstructions selectedRecipe={selectedRecipe} recipeData={recipeData} />
             </td>
           </tr>
         </tbody>

@@ -31,7 +31,7 @@ class App extends React.Component {
       searchInProgress: false,
       open: false,
       message: '',
-      recipeData: {},
+      // recipeData: {},
     };
     // binding all functions to the index component
     // this.getRandomRecipe = this.getRandomRecipe.bind(this);
@@ -46,8 +46,9 @@ class App extends React.Component {
     this.logout = this.logout.bind(this);
     this.autoIngredient = this.autoIngredient.bind(this);
     this.guestLogin = this.guestLogin.bind(this);
-    this.getRecipeId = this.getRecipeId.bind(this);
+    // this.getRecipeId = this.getRecipeId.bind(this);
     this.changeView = this.changeView.bind(this);
+    this.getVideoForQueryRecipe = this.getVideoForQueryRecipe.bind(this);
   }
 
   componentDidMount() {
@@ -75,6 +76,7 @@ class App extends React.Component {
     }) // sends a GET request to serve at endpoint '/food'
       .then((results) => {
         setTimeout(() => this.setState({ searchInProgress: false }), 500);
+        console.log(results.data);
         const rejected = results.data.unwanted.map((ele) => {
           return ele.id;
         });
@@ -139,18 +141,8 @@ class App extends React.Component {
       });
   }
 
-  // gets all ingredients saved to db to for autocomplete component
-  grabIngredients() {
-    axios.get('/ingredients')
-      .then((allIngOptions) => {
-        this.setState({
-          ingredients: allIngOptions.data,
-        });
-      })
-      .catch((error) => {
-        // console.log(error, 'error in getting all ingredients');
-      });
-  }
+  // // gets all ingredients saved to db to for autocomplete component
+  
 
   // sends a POST request to serve at endpoint '/toBeSaved'
   // eslint-disable-next-line class-methods-use-this
@@ -319,22 +311,28 @@ class App extends React.Component {
     });
   }
 
-  getRecipeId(recipeId) {
-    axios.get('/getRecipeClicked', {
+  getVideoForQueryRecipe(queryTitle) {
+    return axios.get('/getVideoForQueryRecipe', {
       params: {
-        recipeId,
+        queryTitle,
       },
     })
       .then((result) => {
-        // const { changeView } = this.state;
-        this.setState({
-          recipeData: result.data,
-        });
-        this.changeView('recipe');
-        console.log(result.data, 'client!!!!!!!!!!!!!!!!!!!!!!!327');
+        console.log(result);
       });
   }
-  
+
+  grabIngredients() {
+    axios.get('/ingredients')
+      .then((allIngOptions) => {
+        this.setState({
+          ingredients: allIngOptions.data,
+        });
+      })
+      .catch((error) => {
+        // console.log(error, 'error in getting all ingredients');
+      });
+  }
 
   render() {
     const { show, wantedIngredients, unwantedIngredients, recipeData } = this.state;
@@ -379,7 +377,8 @@ class App extends React.Component {
           addOriginal={this.addOriginal}
           saveAllergy={this.saveAllergy}
           autoIngredient={this.autoIngredient}
-          getRecipeId={this.getRecipeId}
+          getVideoForQueryRecipe={this.getVideoForQueryRecipe}
+          // getRecipeId={this.getRecipeId}
         />
       );
     }

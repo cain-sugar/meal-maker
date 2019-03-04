@@ -1,4 +1,3 @@
-// component with a list of instructions for the recipe of the day which can be scrolled
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 
@@ -11,40 +10,41 @@ class RecipeInstructions extends React.Component {
   }
 
   render() {
-    const { currentVideo } = this.state;
+    // const { currentVideo, current } = this.state;
+    const { recipeData } = this.props;
     let video;
     let steps;
 
-    if (typeof (currentVideo.instructions) === 'string') {
-      video = currentVideo;
-      steps = currentVideo.instructions.split('\n');
+    if (typeof (recipeData.instructions) === 'string') {
+      // video = currentVideo;
+      steps = recipeData.instructions.split('\n');
     } else {
-      video = currentVideo;
-      steps = currentVideo.instructions;
+      // video = currentVideo;
+      steps = recipeData.instructions;
     }
 
-    if (typeof (video.ingredients) === 'string') {
-      video.ingredients = video.ingredients.split('\n').join(', ');
-    } else {
-      video.ingredients = video.ingredients.join(', ');
-    }
+    // if (typeof (recipeData.ingredients) === 'string') {
+    //   this.props.ingredients = recipeData.ingredients.split('\n').join(', ');
+    // } else {
+    //   this.props.ingredients = recipeData.ingredients.join(', ');
+    // }
 
     return (
       <div className="instructions-list">
-        <h3 className="recTitle">{video.name}</h3>
+        <h3 className="recTitle">{recipeData.name}</h3>
         <Paper style={{ maxHeight: 300, overflow: 'auto' }}>
           <b>Cook Time: </b>
-          {video.cookTime}
+          {recipeData.cookTime}
           {' '}
           minutes
           <br />
           <b>Ingredients: </b>
-          {video.ingredients}
+          {recipeData.ingredients}
           <br />
           <br />
           <b>Instructions: </b>
           <ul>
-            {steps.map(step => <li key={step}>{step}</li>)}
+            {recipeData.instructions}  {/* {steps.map(step => <li key={step}>{step}</li>)} */}
           </ul>
         </Paper>
       </div>

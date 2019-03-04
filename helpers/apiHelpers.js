@@ -13,15 +13,12 @@ const _ = require('lodash');
 
 // search for videos based on the query
 
-const youTubeApi = (query, callback) => axios({
+const youTubeApi = query => axios({
   method: 'get',
-  url: `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=${process.env.YOUTUBE_API_KEY}&q=${query}&maxResults=1`,
+  url: `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=AIzaSyCM0qR9IEPuEpKy_s43WOupd59S59QVeUQ&q=steak&maxResults=1`,
 }).then((searchResults) => {
   // preform a callback with the first object full of video data from the search results
-  callback(null, searchResults.data.items[0]);
-}).catch((err) => {
-  // console.log(err);
-  callback(err, null);
+  return searchResults.data.items[0];
 });
 
 
@@ -140,7 +137,7 @@ const rfnSingleRecipe = recipeId => axios({
   },
   url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/${recipeId}/information`,
 }).then((recipe) => {
-  console.log(recipe, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  // console.log(recipe, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   // object to be returned and that recipe info is stored within
   const recipeInfo = {};
   recipeInfo.name = recipe.data.title;
@@ -162,7 +159,7 @@ const rfnSingleRecipe = recipeId => axios({
   //   return callback(null, recipeInfo);
   // });
 }).catch((err) => {
-  callback(err, null);
+  // callback(err, null);
 });
 // get all ingredients
 

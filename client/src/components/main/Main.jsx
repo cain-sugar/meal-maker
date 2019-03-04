@@ -10,6 +10,7 @@
 // 2) a recipe of the day video player component
 // 3) a recipe instructions component (with a scrolling list of instructions)
 import React from 'react';
+import axios from 'axios';
 import Popup from 'reactjs-popup';
 import Button from '@material-ui/core/Button';
 import SavedRecipes from './SavedRecipes.jsx';
@@ -18,16 +19,37 @@ import Recipe from '../recipe.jsx';
 import logo from '../../../images/clearLogo.png';
 
 
+
 class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       view: 'search',
+      recipeData: {},
     };
     this.changeView = this.changeView.bind(this);
+    this.getRecipeId = this.getRecipeId.bind(this);
   }
 
   // function to change between views
+  
+
+  getRecipeId(recipeId) {
+    axios.get('/getRecipeClicked', {
+      params: {
+        recipeId,
+      },
+    })
+      .then((result) => {
+        // const { changeView } = this.state;
+        this.setState({
+          recipeData: result.data,
+        });
+        this.changeView('recipe');
+        console.log(result.data, 'client!!!!!!!!!!!!!!!!!!!!!!!327');
+      });
+  }
+
   changeView(option) {
     window.previous = option;
     this.setState({
@@ -40,9 +62,9 @@ class Main extends React.Component {
       selectedRecipe, selectRecipe, recipeOfTheDay, recipes, savedRecipes,
       ingredients, getRecipes, saveRecipe, saveDislikeRecipe, getSavedRecipes, user,
       searchInProgress, logout, path, autoIngredient, addOriginal, saveAllergy, wantedIngredients,
-      unwantedIngredients, getRestrictions, getRecipeId,
-    } = this.props;
-    const { view } = this.state;
+      unwantedIngredients, getRestrictions,
+    } = this.props; // getRecipeId
+    const { view, recipeData } = this.state;
     return (
       <div>
         <div className="nav">
@@ -168,11 +190,12 @@ class Main extends React.Component {
                 getRestrictions={getRestrictions}
                 autoIngredient={autoIngredient}
                 saveAllergy={saveAllergy}
-                getRecipeId={getRecipeId}
+                getRecipeId={this.getRecipeId}
+                recipeData={recipeData}
               />
             )
             : view === 'saved' ? <SavedRecipes savedRecipes={savedRecipes} changeView={this.changeView} selectRecipe={selectRecipe} />
-              : <Recipe selectedRecipe={selectedRecipe} />
+              : <Recipe selectedRecipe={selectedRecipe} recipeData={recipeData} />
           }
         </div>
       </div>
