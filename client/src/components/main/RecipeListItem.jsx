@@ -56,28 +56,28 @@ const RecipeListItem = ({
             <td>
               <div
                 className="name"
-                onClick={() => {
-                  const ingObj = recipe.ingredients;
-                  const newIng = _.flatten(ingObj.allIngredients, ingObj.missedIngredients, ingObj.unusedIngredients, ingObj.usedIngredients);
-                  const newRecipe = {
-                    cookTime: recipe.cookTime,
-                    image: recipe.image,
-                    ingredients: newIng,
-                    instructions: recipe.instructions,
-                    link: recipe.videoId,
-                    name: recipe.name,
-                    recipeId: recipe.recipeId,
-                  };
-                  selectRecipe(newRecipe);
-                  changeView('recipe');
-                }}
+                // onClick={() => {
+                //   const ingObj = recipe.ingredients;
+                //   const newIng = _.flatten(ingObj.allIngredients, ingObj.missedIngredients, ingObj.unusedIngredients, ingObj.usedIngredients);
+                //   const newRecipe = {
+                //     cookTime: recipe.cookTime,
+                //     image: recipe.image,
+                //     ingredients: newIng,
+                //     instructions: recipe.instructions,
+                //     link: recipe.videoId,
+                //     name: recipe.name,
+                //     recipeId: recipe.recipeId,
+                //   };
+                //   selectRecipe(newRecipe);
+                //   changeView('recipe');
+                // }}
                 role="presentation"
               >
                 <b>
                   {recipe.title}
                 </b>
               </div>
-              <div className="cookTime" >
+              {/* <div className="cookTime" >
                 <b>Cook Time:</b>
                 {' '}
                 {recipe.readyInMinutes}
@@ -88,7 +88,7 @@ const RecipeListItem = ({
                 <b>Servings: </b>
                 {recipe.servings}
                 <br />
-              </div>
+              </div> */}
               <div>
                 <StyledButtonSave type="button" className="save-recipe-button" variant="contained" onClick={() => saveRecipe(recipe)}> Save that recipe </StyledButtonSave>
                 <StyledButtonDislike type="button" className="dislike-recipe-button" variant="contained" onClick={() => saveDislikeRecipe(recipe)}> Never again! </StyledButtonDislike>
