@@ -295,7 +295,7 @@ class GreetForm extends React.Component {
             },
             {
               id: '2',
-              message: 'To get started, begin typing the ingredients you have on hand, or want to avoid, in the search field. After you are satisfied with your ingredients, just click the "Search for a recipe" button and you will be presented with a custom recipe list, tailored to your specifications. Type help for more options.',
+              message: 'To get started, add ingredients to the search field. After you are satisfied with your selection, just click "Search" to recieve a custom recipe list, tailored to your specifications. Type help for more options.',
               trigger: '3',
             },
             {
@@ -357,7 +357,7 @@ class GreetForm extends React.Component {
     return (
       <ChatBot
         headerTitle="C.A.I.N."
-        speechSynthesis={{ enable: true, lang: 'en', voice: voices[4] }}
+        speechSynthesis={{ enable: opened, lang: 'en', voice: voices[4] }}
         recognitionEnable
         steps={[
           {
