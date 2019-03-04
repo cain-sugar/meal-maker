@@ -4,7 +4,7 @@ import React from 'react';
 import RecipeListItem from './RecipeListItem.jsx';
 
 const RecipeList = ({ recipes, onClick, saveRecipe, 
-  saveDislikeRecipe, selectRecipe, changeView }) => {
+  saveDislikeRecipe, selectRecipe, changeView, getRecipeId, recipeData }) => {
   return (
     <div className="recipe-list">
       {recipes.map((recipe) => {
@@ -17,6 +17,8 @@ const RecipeList = ({ recipes, onClick, saveRecipe,
             saveDislikeRecipe={saveDislikeRecipe}
             selectRecipe={selectRecipe}
             changeView={changeView}
+            getRecipeId={getRecipeId}
+            recipeData={recipeData}
           />
         );
       })}

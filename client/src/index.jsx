@@ -1,4 +1,5 @@
 /* eslint-disable class-methods-use-this */
+// eslint-disable-next-line no-restricted-syntax
 // rendering all components
 /* eslint import/extensions: 0 */
 import React from 'react';
@@ -18,6 +19,8 @@ class App extends React.Component {
       recipeOfTheDay: randomRecipe, // recipe of the day video
       savedRecipes: [],
       ingredients: [],
+      wantedIngredients: [],
+      unwantedIngredients: [],
       userId: 0,
       selectedRecipe: randomRecipe,
       authorized: false,
@@ -28,6 +31,7 @@ class App extends React.Component {
       searchInProgress: false,
       open: false,
       message: '',
+      // recipeData: {},
     };
     // binding all functions to the index component
     // this.getRandomRecipe = this.getRandomRecipe.bind(this);
@@ -38,9 +42,13 @@ class App extends React.Component {
     this.selectRecipe = this.selectRecipe.bind(this);
     this.signUp = this.signUp.bind(this);
     this.login = this.login.bind(this);
+    // this.getRestrictions = this.getRestrictions.bind(this);
     this.logout = this.logout.bind(this);
     this.autoIngredient = this.autoIngredient.bind(this);
     this.guestLogin = this.guestLogin.bind(this);
+    // this.getRecipeId = this.getRecipeId.bind(this);
+    this.changeView = this.changeView.bind(this);
+    this.getVideoForQueryRecipe = this.getVideoForQueryRecipe.bind(this);
   }
 
   componentDidMount() {
@@ -58,25 +66,52 @@ class App extends React.Component {
   }
 
   // function to retrieve recipes to display
-  getRecipes(ingredients) {
-    this.setState({ searchInProgress: true });
+  getRecipes(ingredients, unwantedIngredientList) {
+    // this.setState({ searchInProgress: true });
     const { userId } = this.state;
+    // console.log(ingredients);
     return axios.get('/food', {
       params: {
         userId,
         ingredients,
+        unwantedIngredientList,
       },
     }) // sends a GET request to serve at endpoint '/food'
       .then((results) => {
         setTimeout(() => this.setState({ searchInProgress: false }), 500);
+        console.log(results.data);
+        const rejected = results.data.unwanted.map((ele) => {
+          return ele.id;
+        });
+        const filtered = (results.data.recipes).filter((recipe) => {
+          return !(rejected).includes(recipe.id);
+        });
         this.setState({ // change the state
-          recipes: results.data, // by making the data received back fron the server available
+          recipes: filtered.slice(0, 10), // by making the data received back fron the server available
         });
       }).catch((err) => {
         setTimeout(() => this.setState({ searchInProgress: false }), 500);
         console.log(err, 'error while retrieving data from server');
       });
   }
+
+  // function to get recipes that follow restrictions. Id from these will be compared with the values above
+  // getRestrictions(unwantedIngredientList) {
+  //   const { userId } = this.state;
+
+  //   return axios.get('/unwantedIngredients', {
+  //     params: {
+  //       userId,
+  //       unwantedIngredientList,
+  //     },
+  //   })
+  //     .then((results) => {
+  //       console.log(results);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }
 
   // function to retrieve the recipe of the day
   // getRandomRecipe() {
@@ -105,22 +140,12 @@ class App extends React.Component {
         });
       })
       .catch((err) => {
-        console.log(`there was an error retrieving saved recipes : ${err}`);
+        // console.log(`there was an error retrieving saved recipes : ${err}`);
       });
   }
 
-  // gets all ingredients saved to db to for autocomplete component
-  grabIngredients() {
-    axios.get('/ingredients')
-      .then((allIngOptions) => {
-        this.setState({
-          ingredients: allIngOptions.data,
-        });
-      })
-      .catch((error) => {
-        console.log(error, 'error in getting all ingredients');
-      });
-  }
+  // // gets all ingredients saved to db to for autocomplete component
+  
 
   // sends a POST request to serve at endpoint '/toBeSaved'
   // eslint-disable-next-line class-methods-use-this
@@ -152,9 +177,9 @@ class App extends React.Component {
       recipeId: recipe.recipeId,
     })
       .then((result) => {
-        console.log(result);
+        // console.log(result);
       }).catch((err) => {
-        console.log(err, 'error while trying to save recipe into DB');
+        // console.log(err, 'error while trying to save recipe into DB');
       });
   }
 
@@ -249,12 +274,13 @@ class App extends React.Component {
       });
   }
 
+
   autoIngredient(term, cb) {
     axios.get('/autoIngredient', {
       params: term,
     })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         cb(res.data);
       })
       .catch((err) => {
@@ -281,8 +307,38 @@ class App extends React.Component {
     });
   }
 
+  changeView(option) {
+    window.previous = option;
+    this.setState({
+      view: option,
+    });
+  }
+
+  getVideoForQueryRecipe(queryTitle) {
+    return axios.get('/getVideoForQueryRecipe', {
+      params: {
+        queryTitle,
+      },
+    })
+      .then((result) => {
+        console.log(result);
+      });
+  }
+
+  grabIngredients() {
+    axios.get('/ingredients')
+      .then((allIngOptions) => {
+        this.setState({
+          ingredients: allIngOptions.data,
+        });
+      })
+      .catch((error) => {
+        // console.log(error, 'error in getting all ingredients');
+      });
+  }
+
   render() {
-    const { show } = this.state;
+    const { show, wantedIngredients, unwantedIngredients, recipeData } = this.state;
     let mainComponent = 'login';
     const {
       recipeOfTheDay, selectedRecipe, savedRecipes, recipes, ingredients, userName,
@@ -297,11 +353,15 @@ class App extends React.Component {
           buttonClicked={buttonClicked}
           whichFailed={whichFailed}
           guestLogin={this.guestLogin}
+          // changeView={this.changeView}
         />
       );
     } else if (show === 'home') {
       mainComponent = (
         <Main
+          // changeView={this.changeView}
+          wantedIngredients={wantedIngredients}
+          unwantedIngredients={unwantedIngredients}
           recipes={recipes}
           recipeOfTheDay={recipeOfTheDay}
           selectedRecipe={selectedRecipe}
@@ -313,11 +373,14 @@ class App extends React.Component {
           getSavedRecipes={this.getSavedRecipes}
           selectRecipe={this.selectRecipe}
           user={userName}
+          recipeData={recipeData}
+          // getRestrictions={this.getRestrictions}
           searchInProgress={searchInProgress}
           logout={this.logout}
           addOriginal={this.addOriginal}
           saveAllergy={this.saveAllergy}
           autoIngredient={this.autoIngredient}
+          getVideoForQueryRecipe={this.getVideoForQueryRecipe}
           signUp={this.signUp}
           login={this.login}
           buttonClicked={buttonClicked}

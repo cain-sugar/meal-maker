@@ -11,67 +11,85 @@ const _ = require('lodash');
 // const keys = require('./keys');
 // make .env files locally to assign api keys (see .env.example)
 
-
 // search for videos based on the query
-const youTubeApi = (query, callback) => axios({
+
+const youTubeApi = query => axios({
   method: 'get',
   url: `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=${process.env.YOUTUBE_API_KEY}&q=${query}&maxResults=1`,
 }).then((searchResults) => {
   // preform a callback with the first object full of video data from the search results
-  callback(null, searchResults.data.items[0]);
-}).catch((err) => {
-  console.log(err);
-  callback(err, null);
+  return searchResults.data.items[0];
 });
-const recFoodNutrApi = (ingredients, callback) => {
-  if (!callback) {
-    return Error('Function requires callback!!!');
-  }
-  // get 20 recipies based upon input ingredients
-  return axios({
-    method: 'get',
-    headers: {
-      'X-RapidAPI-Key': process.env.RECIPE_FOOD_NUTRITION_API_KEY,
-    },
-    url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex?includeIngredients=${ingredients}&ranking=1&fillIngredients=true&instructionsRequired=true&addRecipeInformation=true&limitLicense=true&offset=0&number=10`,
-  }).then((result) => {
-    // return sorted and reversed recipies array
-    const recipes = [];
-    _.forEach(result.data.results, (recipe, index) => {
-      // object to store recipe info
-      const recipeInfo = {};
-      recipeInfo.name = recipe.title;
-      recipeInfo.recipeId = recipe.id;
-      recipeInfo.cookTime = recipe.readyInMinutes;
-      recipeInfo.image = recipe.image;
-      recipeInfo.instructions = _.map(recipe.analyzedInstructions[0].steps, instruction => instruction.step);
-      recipeInfo.ingredients = {};
-      recipeInfo.ingredients.missedIngredients = _.map(recipe.missedIngredients, ingredient => ingredient.originalString);
-      recipeInfo.ingredients.usedIngredients = _.map(recipe.usedIngredients, ingredient => ingredient.originalString);
-      recipeInfo.ingredients.unusedIngredients = _.map(recipe.unusedIngredients, ingredient => ingredient.originalString);
-      recipeInfo.ingredients.allIngredients = [];
-      _.forEach(recipeInfo.ingredients, (ingredientList, key) => {
-        if (key !== 'unusedIngredients') {
-          _.forEach(ingredientList, (ingredient) => {
-            if (!_.includes(recipeInfo.ingredients.allIngredients, ingredient)) {
-              recipeInfo.ingredients.allIngredients.push(ingredient);
-            }
-          });
-        }
-      });
-      recipeInfo.percentage = Math.round(recipeInfo.ingredients.usedIngredients.length / recipeInfo.ingredients.allIngredients.length * 100);
-      return youTubeApi(`cook ${recipeInfo.name}`, (err, video) => {
-        recipeInfo.videoId = video.id.videoId;
-        recipes.push(recipeInfo);
-        // console.log(recipes);
-        if (index === result.data.results.length - 1) {
-          return callback(null, recipes);
-        }
-      });
-    });
-  }).catch(err => callback(err, null));
-};
 
+
+const findRecipeIdOfUnwantedIngredients = unwantedIngredients => axios({
+  method: 'get',
+  headers: {
+    'X-RapidAPI-Key': process.env.RECIPE_FOOD_NUTRITION_API_KEY,
+  },
+  url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=30&ranking=1&ingredients=${unwantedIngredients}`
+  // https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search?excludeIngredients=${unwantedIngredients}&number=500
+  ,
+}).then(result =>
+// console.log(result.data.results);
+  _.map(result.data, (recipe) => recipe),
+  // console.log(acceptedRecipies, 'apiHelper!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+);
+
+
+// get 20 recipies based upon input ingredients
+const recFoodNutrApi = ingredients => axios({
+  method: 'get',
+  headers: {
+    'X-RapidAPI-Key': process.env.RECIPE_FOOD_NUTRITION_API_KEY,
+  },
+  url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=30&ranking=1&ingredients=${ingredients}`,
+}).then((result) => {
+  // return sorted and reversed recipies array
+  // console.log(result.data, '!!!!!!!!!!!!!!!!!!!!??????????????????????????????????????????? apiHelper');
+  // const recipes = [];
+  const acceptedRecipies = [];
+  return _.map(result.data, recipe => recipe);
+  // _.forEach(result.data, (recipe) => {
+  // object to store recipe info
+  // console.log(recipe.id, '?????????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!????????????????');
+  // acceptedRecipies.push(recipe);
+  //   const recipeInfo = {};
+  //   recipeInfo.name = recipe.title;
+  //   recipeInfo.recipeId = recipe.id;
+  //   recipeInfo.cookTime = recipe.readyInMinutes;
+  //   recipeInfo.image = recipe.image;
+  //   recipeInfo.instructions = _.map(recipe.analyzedInstructions[0].steps, instruction => instruction.step);
+  //   recipeInfo.ingredients = {};
+  //   recipeInfo.ingredients.missedIngredients = _.map(recipe.missedIngredients, ingredient => ingredient.originalString);
+  //   recipeInfo.ingredients.usedIngredients = _.map(recipe.usedIngredients, ingredient => ingredient.originalString);
+  //   recipeInfo.ingredients.unusedIngredients = _.map(recipe.unusedIngredients, ingredient => ingredient.originalString);
+  //   recipeInfo.ingredients.allIngredients = [];
+  //   _.forEach(recipeInfo.ingredients, (ingredientList, key) => {
+  //     if (key !== 'unusedIngredients') {
+  //       _.forEach(ingredientList, (ingredient) => {
+  //         if (!_.includes(recipeInfo.ingredients.allIngredients, ingredient)) {
+  //           recipeInfo.ingredients.allIngredients.push(ingredient);
+  //         }
+  //       });
+  //     }
+  //   });
+  //   recipeInfo.percentage = Math.round(recipeInfo.ingredients.usedIngredients.length / recipeInfo.ingredients.allIngredients.length * 100);
+  //   return youTubeApi(`cook ${recipeInfo.name}`, (err, video) => {
+  //     recipeInfo.videoId = video.id.videoId;
+  //     recipes.push(recipeInfo);
+  //     // console.log(recipes);
+  //     if (index === result.data.results.length - 1) {
+  //       // return callback(null, recipes);
+  //     }
+  //   });
+  // });
+  // });
+  // console.log(acceptedRecipies, '!!!!!!!!!!!!@2222222222222222!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  // return acceptedRecipies;
+  // console.log(a);
+  // return findRecipeIdOfUnwantedIngredients();
+});
 const rfnRandomRecipe = (callback) => {
   // get request for random recipe
   axios({
@@ -112,13 +130,14 @@ const rfnRandomRecipe = (callback) => {
 };
 
 // request recipe info by id
-const rfnSingleRecipe = (recipeId, callback) => axios({
+const rfnSingleRecipe = recipeId => axios({
   method: 'get',
   headers: {
     'X-RapidAPI-Key': process.env.RECIPE_FOOD_NUTRITION_API_KEY,
   },
   url: `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/${recipeId}/information`,
 }).then((recipe) => {
+  // console.log(recipe, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
   // object to be returned and that recipe info is stored within
   const recipeInfo = {};
   recipeInfo.name = recipe.data.title;
@@ -130,16 +149,17 @@ const rfnSingleRecipe = (recipeId, callback) => axios({
   recipeInfo.ingredients = _.map(recipe.data.extendedIngredients,
     ingredient => ingredient.originalString);
 
+  return recipeInfo;
   // get recipe video and return the recipe info
-  youTubeApi(`cook ${recipeInfo.name}`, (youtubeError, video) => {
-    if (youtubeError) {
-      return callback(youtubeError, null);
-    }
-    recipeInfo.link = video.id.videoId;
-    return callback(null, recipeInfo);
-  });
+  // youTubeApi(`cook ${recipeInfo.name}`, (youtubeError, video) => {
+  //   if (youtubeError) {
+  //     return callback(youtubeError, null);
+  //   }
+  //   recipeInfo.link = video.id.videoId;
+  //   return callback(null, recipeInfo);
+  // });
 }).catch((err) => {
-  callback(err, null);
+  // callback(err, null);
 });
 // get all ingredients
 
@@ -180,4 +200,5 @@ module.exports = {
   hasher,
   rfnSingleRecipe,
   autoComplete,
+  findRecipeIdOfUnwantedIngredients,
 };

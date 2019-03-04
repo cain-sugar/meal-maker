@@ -21,6 +21,7 @@ class Search extends React.Component {
     const {
       recipeOfTheDay, recipes, getRecipes, ingredients, saveRecipe, saveDislikeRecipe, selectRecipe,
       changeView, user, searchInProgress, autoIngredient, saveAllergy, signUp, login, buttonClicked, whichFailed, guestLogin,
+      unwantedIngredients, wantedIngredients, getRestrictions, getRecipeId, recipeData, getVideoForQueryRecipe,
     } = this.props;
     return (
       <div>
@@ -45,6 +46,9 @@ class Search extends React.Component {
             addIngredient={this.addIngredient}
             getRecipes={getRecipes}
             autoIngredient={autoIngredient}
+          unwantedIngredients={unwantedIngredients} 
+          wantedIngredients={wantedIngredients} 
+          getRestrictions={getRestrictions}
           />
         </div>
 
@@ -55,6 +59,8 @@ class Search extends React.Component {
             saveDislikeRecipe={saveDislikeRecipe}
             selectRecipe={selectRecipe}
             changeView={changeView}
+            getRecipeId={getRecipeId}
+            
           />
         </div>
 
@@ -63,8 +69,8 @@ class Search extends React.Component {
           <table>
             <tbody>
               <tr>
-                <td className="vidPlayer"><VideoPlayer recipe={recipeOfTheDay} /></td>
-                <td className="instructions"><RecipeInstructions recipe={recipeOfTheDay} /></td>
+                <td className="vidPlayer"><VideoPlayer recipe={recipeOfTheDay} recipeData={recipeData} getVideoForQueryRecipe={getVideoForQueryRecipe} /></td>
+                <td className="instructions"><RecipeInstructions recipe={recipeOfTheDay} recipeData={recipeData} /></td>
               </tr>
             </tbody>
           </table>
