@@ -361,16 +361,6 @@ class GreetForm extends React.Component {
         recognitionEnable
         steps={[
           {
-            id: '3',
-            message: 'How can I help?',
-            trigger: '4',
-          },
-          // {
-          //   id: 'wait',
-          //   message: "I'll be right over here if you need anything.",
-          //   trigger: '4',
-          // },
-          {
             id: '4',
             options: [
               { value: 'Switch Account/Create Account', label: 'Switch Account\nor\nCreate Account', trigger: '5' },
