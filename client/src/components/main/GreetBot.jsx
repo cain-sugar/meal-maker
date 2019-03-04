@@ -215,7 +215,7 @@ class GreetForm extends React.Component {
             {
               id: '1',
               message: `Welcome back ${user}!, I am 'CAIN'. 
-              The "Client, Appitite, Indulgence, Network".`,
+              The "Client, Appetite, Indulgence, Network".`,
               trigger: '2',
             },
             {
@@ -290,7 +290,7 @@ class GreetForm extends React.Component {
             {
               id: '1',
               message: `Hello ${user}!, I am 'CAIN'. 
-              The "Client, Appitite, Indulgence, Network".`,
+              The "Client, Appetite, Indulgence, Network".`,
               trigger: '2',
             },
             {
@@ -360,16 +360,6 @@ class GreetForm extends React.Component {
         speechSynthesis={{ enable: opened, lang: 'en', voice: voices[4] }}
         recognitionEnable
         steps={[
-          {
-            id: '3',
-            message: 'How can I help?',
-            trigger: '4',
-          },
-          // {
-          //   id: 'wait',
-          //   message: "I'll be right over here if you need anything.",
-          //   trigger: '4',
-          // },
           {
             id: '4',
             options: [
