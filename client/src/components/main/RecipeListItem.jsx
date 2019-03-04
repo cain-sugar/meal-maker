@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 // a component with
 // a receipe name
 // a match percentage
@@ -39,9 +41,9 @@ const StyledButtonDislike = withStyles({
   },
 })(Button);
 
-const RecipeListItem = ({ recipe, saveRecipe, saveDislikeRecipe, selectRecipe, changeView }) => {
-
-  return (
+const RecipeListItem = ({
+  recipe, saveRecipe, saveDislikeRecipe, selectRecipe, changeView, getRecipeId, recipeData 
+}) => (
     <div
       className="recipe-list-item"
     >
@@ -49,47 +51,44 @@ const RecipeListItem = ({ recipe, saveRecipe, saveDislikeRecipe, selectRecipe, c
         <tbody>
           <tr>
             <td>
-              <img className="recipe-list" src={recipe.image} alt="" />
+              <img className="recipe-list" src={recipe.image} alt="" onClick={() => { getRecipeId(recipe.id); }} />
             </td>
             <td>
               <div
                 className="name"
-                onClick={() => {
-                  const ingObj = recipe.ingredients;
-                  const newIng = _.flatten(ingObj.allIngredients, ingObj.missedIngredients, ingObj.unusedIngredients, ingObj.usedIngredients);
-                  const newRecipe = {
-                    cookTime: recipe.cookTime,
-                    image: recipe.image,
-                    ingredients: newIng,
-                    instructions: recipe.instructions,
-                    link: recipe.videoId,
-                    name: recipe.name,
-                    recipeId: recipe.recipeId,
-                  };
-                  selectRecipe(newRecipe);
-                  changeView('recipe');
-                }}
+                // onClick={() => {
+                //   const ingObj = recipe.ingredients;
+                //   const newIng = _.flatten(ingObj.allIngredients, ingObj.missedIngredients, ingObj.unusedIngredients, ingObj.usedIngredients);
+                //   const newRecipe = {
+                //     cookTime: recipe.cookTime,
+                //     image: recipe.image,
+                //     ingredients: newIng,
+                //     instructions: recipe.instructions,
+                //     link: recipe.videoId,
+                //     name: recipe.name,
+                //     recipeId: recipe.recipeId,
+                //   };
+                //   selectRecipe(newRecipe);
+                //   changeView('recipe');
+                // }}
                 role="presentation"
               >
                 <b>
-                  {recipe.name}
+                  {recipe.title}
                 </b>
               </div>
-              <div className="cookTime">
+              {/* <div className="cookTime" >
                 <b>Cook Time:</b>
                 {' '}
-                {recipe.cookTime}
+                {recipe.readyInMinutes}
                 {' '}
                 minutes
               </div>
               <div className="ingredients-used">
-                <b>Uses: </b>
-                {recipe.ingredients.usedIngredients}
+                <b>Servings: </b>
+                {recipe.servings}
                 <br />
-                <b>Match Percentage: </b>
-                {recipe.percentage}
-                %
-              </div>
+              </div> */}
               <div>
                 <StyledButtonSave type="button" className="save-recipe-button" variant="contained" onClick={() => saveRecipe(recipe)}> Save that recipe </StyledButtonSave>
                 <StyledButtonDislike type="button" className="dislike-recipe-button" variant="contained" onClick={() => saveDislikeRecipe(recipe)}> Never again! </StyledButtonDislike>
@@ -101,7 +100,6 @@ const RecipeListItem = ({ recipe, saveRecipe, saveDislikeRecipe, selectRecipe, c
       </table>
     </div>
   );
-};
 
 
 export default RecipeListItem;

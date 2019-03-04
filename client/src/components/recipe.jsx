@@ -4,16 +4,23 @@ import React from 'react';
 import RecipeInstructions from './login/RecipeInstructions.jsx';
 import VideoPlayer from './VideoPlayer.jsx';
 
-
-const Recipe = ({ selectedRecipe }) => {
+// const recipeToShow = {
+//   cookTime: recipeData.cookTime,
+//   image: recipeData.image,
+//   ingredients: recipeData.ingredients,
+//   instructions: recipeData.instructions,
+// };
+// selectRecipe(recipeToShow);
+// changeView('recipe');
+const Recipe = ({ selectedRecipe, recipeData }) => {
   return (
     <div className="selected-recipe">
       <table>
         <tbody>
           <tr>
-            <td className="vidPlayer"><VideoPlayer recipe={selectedRecipe} /></td>
+            <td className="vidPlayer"><VideoPlayer recipe={selectedRecipe} recipeData={recipeData} /></td>
             <td className="instructions">
-              <RecipeInstructions recipe={selectedRecipe} />
+              <RecipeInstructions selectedRecipe={selectedRecipe} recipeData={recipeData} />
             </td>
           </tr>
         </tbody>

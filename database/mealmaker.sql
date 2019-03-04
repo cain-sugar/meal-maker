@@ -4,7 +4,6 @@ CREATE DATABASE mealmaker;
 -- mysql -u root < database/mealmaker.sql
 
 USE mealmaker;
-
 DROP TABLE IF EXISTS Users;
 
 CREATE TABLE Users (
@@ -23,8 +22,8 @@ CREATE TABLE Recipes (
   recipeImageLink VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
-
-
+-- --
+-- INGREDIENTS TABLE populated to auto complete query by user
 CREATE TABLE Ingredient (
   id INTEGER AUTO_INCREMENT NOT NULL,
   ingredient VARCHAR(255) NOT NULL,
