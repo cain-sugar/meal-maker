@@ -34,7 +34,7 @@ class Credentials extends React.Component {
           onClick={() => {
             const user = document.getElementById('username').value;
             const pw = document.getElementById('password').value;
-            login(user, pw);
+            window.login(user, pw);
           }}
         >
         Login
@@ -47,7 +47,7 @@ class Credentials extends React.Component {
           onClick={() => {
             const user = document.getElementById('username').value;
             const pw = document.getElementById('password').value;
-            signUp(user, pw);
+            window.signup(user, pw);
           }}
         >
         Sign Up
@@ -58,7 +58,7 @@ class Credentials extends React.Component {
           type="submit"
           value="guestLogin"
           onClick={() => {
-            guestLogin();
+            window.guest();
           }}
         >
         Log in as guest

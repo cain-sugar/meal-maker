@@ -15,7 +15,7 @@ const _ = require('lodash');
 
 const youTubeApi = query => axios({
   method: 'get',
-  url: `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=AIzaSyCM0qR9IEPuEpKy_s43WOupd59S59QVeUQ&q=steak&maxResults=1`,
+  url: `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&key=${process.env.YOUTUBE_API_KEY}&q=${query}&maxResults=1`,
 }).then((searchResults) => {
   // preform a callback with the first object full of video data from the search results
   return searchResults.data.items[0];

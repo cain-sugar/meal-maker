@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 // main page view which contains
 // 1) a search component (with an input form, a + button and a submit button)
 // 2) a saved recipes button that makes the saved recipe component drawer appear
@@ -61,8 +62,8 @@ class Main extends React.Component {
     const {
       selectedRecipe, selectRecipe, recipeOfTheDay, recipes, savedRecipes,
       ingredients, getRecipes, saveRecipe, saveDislikeRecipe, getSavedRecipes, user,
-      searchInProgress, logout, path, autoIngredient, addOriginal, saveAllergy, wantedIngredients,
-      unwantedIngredients, getRestrictions,
+      searchInProgress, logout, autoIngredient, addOriginal, saveAllergy, signUp, login, buttonClicked, whichFailed, guestLogin,
+      wantedIngredients, unwantedIngredients, getRestrictions,
     } = this.props; // getRecipeId
     const { view, recipeData } = this.state;
     return (
@@ -73,12 +74,12 @@ class Main extends React.Component {
             src={logo}
             width="7%"
             height="auto"
-            onClick={() => this.changeView("search")}
+            onClick={() => this.changeView('search')}
           />
           <button
             type="button"
             className="mealMakerLogo"
-            onClick={() => this.changeView("search")}
+            onClick={() => this.changeView('search')}
           >
             mealMaker
           </button>
@@ -87,9 +88,9 @@ class Main extends React.Component {
             color="primary"
             type="button"
             className={
-              view === "search" ? "nav-selected" : "nav-unselected"
+              view === 'search' ? 'nav-selected' : 'nav-unselected'
             }
-            onClick={() => this.changeView("search")}
+            onClick={() => this.changeView('search')}
           >
             Home
           </Button>
@@ -97,10 +98,10 @@ class Main extends React.Component {
             variant="contained"
             color="primary"
             type="button"
-            className={view === "saved" ? "nav-selected" : "nav-unselected"}
+            className={view === 'saved' ? 'nav-selected' : 'nav-unselected'}
             onClick={() => {
               getSavedRecipes();
-              this.changeView("saved");
+              this.changeView('saved');
             }}
           >
             Saved Recipes
@@ -117,27 +118,29 @@ class Main extends React.Component {
                 <div className="content">
                   <form>
                     <label>
-                      Recipe Name:    
-                      <input type="text" name="name" ref={input => this.name = input}
-                      />
+                      Recipe Name:
+                      <input
+type="text"
+name="name"
+ref={input => this.name = input}/>
                     </label>
                     <br />
                     <br />
                     <label>
-                      Ingredients:    
+                      Ingredients:
                       <input type="text" name="ingredients" display="center" ref={input => this.ingredients = input} />
                     </label>
                     <br />
                     <br />
                     <label>
-                      Instructions:   
+                      Instructions:
                       <input type="text" name="instructions" ref={input => this.instructions = input} />
                     </label>
                     <br />
                     <br />
                     <label>
-                      Cook Time:    
-                      <input type="integer" name="cooktime" ref={input => this.cooktime = input}/>
+                      Cook Time:
+                      <input type="integer" name="cooktime" ref={input => this.cooktime = input} />
                     </label>
                     <br />
                     <br />
@@ -172,7 +175,7 @@ class Main extends React.Component {
         </div>
 
         <div className="main">
-          { view === 'search' 
+          { view === 'search'
             ? (
               <Search
                 ingredients={ingredients}
@@ -192,6 +195,11 @@ class Main extends React.Component {
                 saveAllergy={saveAllergy}
                 getRecipeId={this.getRecipeId}
                 recipeData={recipeData}
+                signUp={signUp}
+                login={login}
+                buttonClicked={buttonClicked}
+                whichFailed={whichFailed}
+                guestLogin={guestLogin}
               />
             )
             : view === 'saved' ? <SavedRecipes savedRecipes={savedRecipes} changeView={this.changeView} selectRecipe={selectRecipe} />

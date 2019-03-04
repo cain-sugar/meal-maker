@@ -20,8 +20,8 @@ class Search extends React.Component {
   render() {
     const {
       recipeOfTheDay, recipes, getRecipes, ingredients, saveRecipe, saveDislikeRecipe, selectRecipe,
-      changeView, user, searchInProgress, autoIngredient, saveAllergy, unwantedIngredients, wantedIngredients,
-      getRestrictions, getRecipeId, recipeData, getVideoForQueryRecipe,
+      changeView, user, searchInProgress, autoIngredient, saveAllergy, signUp, login, buttonClicked, whichFailed, guestLogin,
+      unwantedIngredients, wantedIngredients, getRestrictions, getRecipeId, recipeData, getVideoForQueryRecipe,
     } = this.props;
     return (
       <div>
@@ -29,7 +29,15 @@ class Search extends React.Component {
           Welcome,
           {user}
         </h2>
-        <GreetBot user={user} saveAllergy={saveAllergy} />
+        <GreetBot
+          signUp={signUp}
+          login={login}
+          buttonClicked={buttonClicked}
+          whichFailed={whichFailed}
+          guestLogin={guestLogin}
+          user={user}
+          saveAllergy={saveAllergy}
+        />
         <h2 align="center">Search for a recipe</h2>
         <div className="Search-Comp">
           {searchInProgress ? <LinearProgress /> : ''}

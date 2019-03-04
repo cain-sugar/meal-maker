@@ -1,4 +1,7 @@
 import React from 'react';
+// import Axios from 'axios';
+import jokes from '../../jokes.js';
+import compliments from '../../compliments.js';
 import ChatBot from '../../../react-simple-chatbot';
 import Credentials from '../login/Credentials.jsx';
 
@@ -10,8 +13,30 @@ class GreetForm extends React.Component {
       favFood: '',
       opened: true,
     };
+    this.count = 0;
+
+    this.compliment = () => {
+      const comp = compliments[this.count];
+      this.count += 1;
+      if (this.count === compliments.length) {
+        this.count = 0;
+      }
+      return comp;
+    };
+
+    this.joke = () => {
+      const joke = jokes[this.count];
+      this.count += 1;
+      if (this.count === jokes.length) {
+        this.count = 0;
+      }
+      return joke;
+    };
   }
 
+  componentDidMount() {
+    this.compliment();
+  }
 
   toggleFloating({ opened }) {
     this.setState({ opened });
@@ -20,7 +45,9 @@ class GreetForm extends React.Component {
 
   render() {
     const { favFood, opened } = this.state;
-    const { user, saveAllergy } = this.props;
+    const {
+      user, saveAllergy, signUp, login, buttonClicked, whichFailed, guestLogin,
+    } = this.props;
     const voices = speechSynthesis.getVoices();
     let voice = voices[4];
     if (voices.length > 40) {
@@ -35,7 +62,7 @@ class GreetForm extends React.Component {
           steps={[
             {
               id: '1',
-              message: `Hello ${user}, I am 'CAIN', (Client. Appetite. Indulgence. Network).`,
+              message: `Hello ${user}, I am 'CAIN'. The Client, Appetite, Indulgence, Network.`,
               trigger: '3',
             },
             {
@@ -80,7 +107,7 @@ class GreetForm extends React.Component {
             },
             {
               id: '6',
-              message: 'Fuck yeah, {previousValue}!!!',
+              message: 'Yeah it is!',
               trigger: '7',
             },
             {
@@ -110,17 +137,66 @@ class GreetForm extends React.Component {
             {
               id: 'update-allergies',
               update: 'allergies',
-              trigger: 'allergies',
+              trigger: '3',
             },
             {
               id: 'update-favFood',
               update: 'favFood',
-              trigger: 'favFood',
+              trigger: '5',
             },
             {
               id: 'end-message',
-              message: 'Thanks! Your data was submitted successfully!',
+              message: 'Thanks! Your data was submitted successfully! For a short list of other commands, type help or click the send button!',
+              trigger: '9',
+            },
+            {
+              id: '9',
+              message: 'Okay! How can I help?',
+              user: true,
+              trigger: 'a',
+            },
+            {
+              id: 'a',
+              options: [
+                { value: 'Switch Account/Create Account', label: 'Switch Account\nor\nCreate Account', trigger: 'b' },
+                { value: 'Logout', label: 'Log me out', trigger: 'c' },
+                { value: 'Give me a compliment', label: 'Give me a compliment', trigger: 'd' },
+                { value: 'Tell me a joke', label: 'Tell me a joke', trigger: 'e' },
+              ],
+            },
+            {
+              id: 'b',
+              component: (
+                <Credentials
+                  signUp={window.signup}
+                  login={window.login}
+                  guestLogin={window.guest}
+                />
+              ),
+              trigger: 'a',
+            },
+            {
+              id: 'c',
+              message: 'Please click to confirm logout.',
+              trigger: 'logout',
+            },
+            {
+              id: 'logout',
+              user: true,
+              validator: () => {
+                window.logout();
+              },
               end: true,
+            },
+            {
+              id: 'd',
+              message: this.compliment,
+              trigger: 'a',
+            },
+            {
+              id: 'e',
+              message: this.joke,
+              trigger: 'a',
             },
           ]}
           floating
@@ -140,19 +216,62 @@ class GreetForm extends React.Component {
               id: '1',
               message: `Welcome back ${user}!, I am 'CAIN'. 
               The "Client, Appitite, Indulgence, Network".`,
+              trigger: '2',
+            },
+            {
+              id: '2',
+              message: `Let me know if I can be of assistance. 
+              You may type help for a list of commands`,
               trigger: '3',
             },
             {
               id: '3',
-              message: `Let me know if I can be of assistance. 
-              If you have yet to familiarize yourself with me, 
-              you may type help for a list of commands`,
-              trigger: 'wait',
+              message: 'Okay! How can I help?',
+              user: true,
+              trigger: '4',
             },
             {
-              id: 'wait',
-              message: "I'll be right over here if you need anything.",
+              id: '4',
+              options: [
+                { value: 'Switch Account/Create Account', label: 'Switch Account\nor\nCreate Account', trigger: '5' },
+                { value: 'Logout', label: 'Log me out', trigger: '6' },
+                { value: 'Give me a compliment', label: 'Give me a compliment', trigger: '7' },
+                { value: 'Tell me a joke', label: 'Tell me a joke', trigger: '8' },
+              ],
+            },
+            {
+              id: '5',
+              component: (
+                <Credentials
+                  signUp={window.signup}
+                  login={window.login}
+                  guestLogin={window.guest}
+                />
+              ),
+              trigger: '4',
+            },
+            {
+              id: '6',
+              message: 'Please click to confirm logout.',
+              trigger: 'logout',
+            },
+            {
+              id: 'logout',
+              user: true,
+              validator: () => {
+                window.logout();
+              },
               end: true,
+            },
+            {
+              id: '7',
+              message: this.compliment,
+              trigger: '4',
+            },
+            {
+              id: '8',
+              message: this.joke,
+              trigger: '4',
             },
           ]}
           floating
@@ -172,19 +291,61 @@ class GreetForm extends React.Component {
               id: '1',
               message: `Hello ${user}!, I am 'CAIN'. 
               The "Client, Appitite, Indulgence, Network".`,
+              trigger: '2',
+            },
+            {
+              id: '2',
+              message: 'To get started, add ingredients to the search field. After you are satisfied with your selection, just click "Search" to recieve a custom recipe list, tailored to your specifications. Type help for more options.',
               trigger: '3',
             },
             {
               id: '3',
-              message: 'To get started, begin typing the ingredients you have on hand, or want to avoid, in the search field. After you are satisfied with your ingredients, just click the "Search for a recipe" button and you will be presented with a custom recipe list, tailored to your specifications',
-              trigger: 'wait',
+              message: 'Okay! How can I help?',
+              user: true,
+              trigger: '4',
             },
             {
-              id: 'wait',
+              id: '4',
+              options: [
+                { value: 'Switch Account/Create Account', label: 'Switch Account\nor\nCreate Account', trigger: '5' },
+                { value: 'Logout', label: 'Log me out', trigger: '6' },
+                { value: 'Give me a compliment', label: 'Give me a compliment', trigger: '7' },
+                { value: 'Tell me a joke', label: 'Tell me a joke', trigger: '8' },
+              ],
+            },
+            {
+              id: '5',
               component: (
-                <Credentials />
+                <Credentials
+                  signUp={window.signup}
+                  login={window.login}
+                  guestLogin={window.guest}
+                />
               ),
+              trigger: '4',
+            },
+            {
+              id: '6',
+              message: 'Please click to confirm logout.',
+              trigger: 'logout',
+            },
+            {
+              id: 'logout',
+              user: true,
+              validator: () => {
+                window.logout();
+              },
               end: true,
+            },
+            {
+              id: '7',
+              message: this.compliment,
+              trigger: '4',
+            },
+            {
+              id: '8',
+              message: this.joke,
+              trigger: '4',
             },
           ]}
           floating
@@ -196,15 +357,9 @@ class GreetForm extends React.Component {
     return (
       <ChatBot
         headerTitle="C.A.I.N."
-        speechSynthesis={{ enable: true, lang: 'en', voice: voices[4] }}
+        speechSynthesis={{ enable: opened, lang: 'en', voice: voices[4] }}
         recognitionEnable
         steps={[
-          {
-            id: '1',
-            message: '',
-            user: true,
-            trigger: '3',
-          },
           {
             id: '3',
             message: 'How can I help?',
@@ -217,76 +372,46 @@ class GreetForm extends React.Component {
           // },
           {
             id: '4',
-            message: '',
-            user: true,
-            trigger: '5',
+            options: [
+              { value: 'Switch Account/Create Account', label: 'Switch Account\nor\nCreate Account', trigger: '5' },
+              { value: 'Logout', label: 'Log me out', trigger: '6' },
+              { value: 'Give me a compliment', label: 'Give me a compliment', trigger: '7' },
+              { value: 'Tell me a joke', label: 'Tell me a joke', trigger: '8' },
+            ],
           },
           {
             id: '5',
-            message: 'To do, add list of commands',
-            trigger: 'favFood',
-          },
-          {
-            id: 'favFood',
-            user: true,
-            validator: (value) => {
-              if (value) {
-                this.setState({ favFood: value });
-                return true;
-              }
-              return true;
-            },
-            trigger: '6',
+            component: (
+              <Credentials
+                signUp={window.signup}
+                login={window.login}
+                guestLogin={window.guest}
+              />
+            ),
+            trigger: '4',
           },
           {
             id: '6',
-            message: 'Fuck yeah, {previousValue}!!!',
-            trigger: '7',
+            message: 'Please click to confirm logout.',
+            trigger: 'logout',
+          },
+          {
+            id: 'logout',
+            user: true,
+            validator: () => {
+              window.logout();
+            },
+            end: true,
           },
           {
             id: '7',
-            message: 'Would you like to update any of the previous fields?',
-            trigger: 'update-question',
+            message: this.compliment,
+            trigger: '4',
           },
           {
-            id: 'update-question',
-            options: [
-              { value: 'yes', label: 'Yes', trigger: 'update-yes' },
-              { value: 'no', label: 'No', trigger: 'end-message' },
-            ],
-          },
-          {
-            id: 'update-yes',
-            message: 'What field would you like to update?',
-            trigger: 'update-fields',
-          },
-          {
-            id: 'update-fields',
-            options: [
-              { value: 'name', label: 'Name', trigger: 'update-name' },
-              { value: 'allergies', label: 'allergies', trigger: 'update-allergies' },
-              { value: 'favFoods', label: 'Favorite Food', trigger: 'update-favFood' },
-            ],
-          },
-          {
-            id: 'update-name',
-            update: 'name',
-            trigger: '7',
-          },
-          {
-            id: 'update-allergies',
-            update: 'allergies',
-            trigger: '7',
-          },
-          {
-            id: 'update-favFood',
-            update: 'favFood',
-            trigger: '7',
-          },
-          {
-            id: 'end-message',
-            message: 'Thanks! Your data was submitted successfully!',
-            end: true,
+            id: '8',
+            message: this.joke,
+            trigger: '4',
           },
         ]}
         floating
