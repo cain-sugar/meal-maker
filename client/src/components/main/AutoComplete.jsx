@@ -50,11 +50,11 @@ class AutoComplete extends React.Component {
 
   onTextChange2(e) {
     console.log(e);
-    const { text, suggestions } = this.state;
+    const { dislikeText, suggestions } = this.state;
     const { autoIngredient } = this.props;
     const { value } = e.target;
-    this.setState({ text: value });
-    autoIngredient(text, (ingredients) => {
+    this.setState({ dislikeText: value });
+    autoIngredient(dislikeText, (ingredients) => {
       const sugg = ingredients.map(i => i.food_name);
       console.log(sugg);
       console.log(suggestions);
@@ -80,6 +80,7 @@ class AutoComplete extends React.Component {
     this.setState({
       selectedIngredients,
       text: '',
+      dislikeText: '',
     });
   }
 

@@ -144,7 +144,7 @@ app.get('/ingredients', (req, res) => {
 
 // GET for ingredient autocomplete list
 app.get('/autoIngredient', (req, res) => {
-  console.log(req.query);
+  // console.log(req.query);
   const list = helper.autoComplete(req.query[0]);
   list.then((ingList) => {
     res.status(200).send(ingList.data.common);
@@ -182,7 +182,7 @@ app.post('/random', (req, res) => {
         return res.status(500).send('Something Went Wrong!');
       }
       // See if recipe has already been a recipe of the day //
-      const duplicateCount = _.filter(pastRecipeOfTheDays, (recipe) => recipe.name === randomRecipe.name).length;
+      const duplicateCount = _.filter(pastRecipeOfTheDays, recipe => recipe.name === randomRecipe.name).length;
       if (duplicateCount === 0) {
         // Get all recipes currently inside of our database //
         return db.selectAllRecipes((err, currentRecipes) => {
@@ -190,7 +190,7 @@ app.post('/random', (req, res) => {
             return res.status(500).send('Something Went Wrong!');
           }
           // See if we have an old recipe that is the same as the random recipe
-          const oldRecipe = _.filter(currentRecipes, (recipe) => recipe.recipe === randomRecipe.name)[0];
+          const oldRecipe = _.filter(currentRecipes, recipe => recipe.recipe === randomRecipe.name)[0];
           // Save the random recipe if we don't have it already //
           if (!oldRecipe) {
             // Save the recipe
@@ -327,32 +327,39 @@ app.post('/disliked', (req, res) => {
 // when client wants to retrieve all the saved recipes for a particular user
 app.get('/savedrecipes', (req, res) => {
   const { userId } = req.query;
-  db.selectLikedRecipes(userId, (err, results) => {
+  // db.selectLikedRecipes(userId, (err, results) => {
+  //   if (err) {
+  //     res.status(500).send('Something went wrong!');
+  //   } else {
+  //     // console.log('next step');
+  //     // get the recipeIds from the DB
+  //     const recipeIds = results.map(result => result.idRecipes);
+
+  //     const recipesObj = [];
+  //     // get an array of objects named recipeInfo from rfn and youtube for each id
+  //     const recipesInfo = recipeIds.forEach((id, index) => helper.rfnSingleRecipe(id, (err, result) => {
+  //       if (err) {
+  //         // console.log(err, 'error in getting recipe saved');
+  //         return;
+  //       }
+  //       // console.log(`${result}, from saved db`);
+  //       recipesObj.push(result);
+
+  //       if (index === recipeIds.length - 1) {
+  //         res.status(200).send(recipesObj); // send that array back to client
+  //       }
+  //       // console.log(recipesObj);
+  //     }));
+  db.showOriginalRecipes(userId, (err, results) => {
     if (err) {
-      res.status(500).send('Something went wrong!');
+      console.log(err);
     } else {
-      // console.log('next step');
-      // get the recipeIds from the DB
-      const recipeIds = results.map(result => result.idRecipes);
-
-      const recipesObj = [];
-      // get an array of objects named recipeInfo from rfn and youtube for each id
-      const recipesInfo = recipeIds.forEach((id, index) => helper.rfnSingleRecipe(id, (err, result) => {
-        if (err) {
-          // console.log(err, 'error in getting recipe saved');
-          return;
-        }
-        // console.log(`${result}, from saved db`);
-        recipesObj.push(result);
-
-        if (index === recipeIds.length - 1) {
-          res.status(200).send(recipesObj); // send that array back to client
-        }
-        // console.log(recipesObj);
-      }));
+      // console.log(results);
+      res.status(200).send(results);
     }
   });
 });
+
 // db.selectLikedRecipes(userId, (err, results) => {
 //   if (err) {
 //     res.status(500).send('Something went wrong!');
@@ -379,14 +386,7 @@ app.get('/savedrecipes', (req, res) => {
 //     }));
 //   }
 // });
-db.showOriginalRecipes(userId, (err, results) => {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log(results);
-    res.status(200).send(results);
-  }
-});
+
 
 // when client wants to save a recipe into DB
 app.post('/toBeSaved', (req, res) => {
@@ -440,6 +440,17 @@ app.post('/allergies', (req, res) => {
   console.log(req);
   const { body: { user: { user, allergies } } } = req;
   db.saveAllergies(allergies, user);
+});
+
+app.get('/getRecipeClicked', (req, res) => {
+  // console.log(req.query, "server page!!!!!!!!!!!!!!!!!!!!!!!!");
+  const recipeIdLookUpNum = req.query.recipeId;
+  helper.rfnSingleRecipe(recipeIdLookUpNum)
+    .then((entireRecipe) => {
+      console.log(entireRecipe);
+      res.send(entireRecipe);
+    })
+    .catch(() => 'something went wrong in the server line 451');
 });
 
 // Able to set port and still work //

@@ -31,6 +31,7 @@ class App extends React.Component {
       searchInProgress: false,
       open: false,
       message: '',
+      recipeData: {},
     };
     // binding all functions to the index component
     // this.getRandomRecipe = this.getRandomRecipe.bind(this);
@@ -45,6 +46,8 @@ class App extends React.Component {
     this.logout = this.logout.bind(this);
     this.autoIngredient = this.autoIngredient.bind(this);
     this.guestLogin = this.guestLogin.bind(this);
+    this.getRecipeId = this.getRecipeId.bind(this);
+    this.changeView = this.changeView.bind(this);
   }
 
   componentDidMount() {
@@ -72,20 +75,12 @@ class App extends React.Component {
     }) // sends a GET request to serve at endpoint '/food'
       .then((results) => {
         setTimeout(() => this.setState({ searchInProgress: false }), 500);
-        const accepted = results.data.recipes.map((ele) => {
-          return ele.id;
-        });
         const rejected = results.data.unwanted.map((ele) => {
           return ele.id;
         });
-
-
         const filtered = (results.data.recipes).filter((recipe) => {
           return !(rejected).includes(recipe.id);
         });
-        console.log(accepted);
-        console.log(rejected);
-        console.log(filtered);
         this.setState({ // change the state
           recipes: filtered.slice(0, 10), // by making the data received back fron the server available
         });
@@ -290,7 +285,7 @@ class App extends React.Component {
       params: term,
     })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         cb(res.data);
       })
       .catch((err) => {
@@ -317,8 +312,32 @@ class App extends React.Component {
     });
   }
 
+  changeView(option) {
+    window.previous = option;
+    this.setState({
+      view: option,
+    });
+  }
+
+  getRecipeId(recipeId) {
+    axios.get('/getRecipeClicked', {
+      params: {
+        recipeId,
+      },
+    })
+      .then((result) => {
+        // const { changeView } = this.state;
+        this.setState({
+          recipeData: result.data,
+        });
+        this.changeView('recipe');
+        console.log(result.data, 'client!!!!!!!!!!!!!!!!!!!!!!!327');
+      });
+  }
+  
+
   render() {
-    const { show, wantedIngredients, unwantedIngredients } = this.state;
+    const { show, wantedIngredients, unwantedIngredients, recipeData } = this.state;
     let mainComponent = 'login';
     const {
       recipeOfTheDay, selectedRecipe, savedRecipes, recipes, ingredients, userName,
@@ -333,11 +352,13 @@ class App extends React.Component {
           buttonClicked={buttonClicked}
           whichFailed={whichFailed}
           guestLogin={this.guestLogin}
+          // changeView={this.changeView}
         />
       );
     } else if (show === 'home') {
       mainComponent = (
         <Main
+          // changeView={this.changeView}
           wantedIngredients={wantedIngredients}
           unwantedIngredients={unwantedIngredients}
           recipes={recipes}
@@ -351,12 +372,14 @@ class App extends React.Component {
           getSavedRecipes={this.getSavedRecipes}
           selectRecipe={this.selectRecipe}
           user={userName}
+          recipeData={recipeData}
           // getRestrictions={this.getRestrictions}
           searchInProgress={searchInProgress}
           logout={this.logout}
           addOriginal={this.addOriginal}
           saveAllergy={this.saveAllergy}
           autoIngredient={this.autoIngredient}
+          getRecipeId={this.getRecipeId}
         />
       );
     }
