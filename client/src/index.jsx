@@ -45,7 +45,10 @@ class App extends React.Component {
 
   componentDidMount() {
     const { authorized } = this.state;
-    // this.getRandomRecipe();
+    window.logout = this.logout;
+    window.login = this.login;
+    window.signup = this.signUp;
+    window.guest = this.guestLogin;
     this.grabIngredients();
     if (authorized) {
       this.setState({
@@ -315,6 +318,11 @@ class App extends React.Component {
           addOriginal={this.addOriginal}
           saveAllergy={this.saveAllergy}
           autoIngredient={this.autoIngredient}
+          signUp={this.signUp}
+          login={this.login}
+          buttonClicked={buttonClicked}
+          whichFailed={whichFailed}
+          guestLogin={this.guestLogin}
         />
       );
     }
